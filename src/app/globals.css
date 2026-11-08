@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
+@theme {
+  /* ========================================================
+     PALETA DE CORES OFICIAL - DESIGN SYSTEM KALLOS PSI
+     Nomes oficiais e nomes confortáveis em Português (PT-BR)
+     ======================================================== */
+
+  /* 1. Primária Escura / Identidade */
+  --color-verde-escuro: #28382c;      /* Deep Sage */
+  --color-deep-sage: #28382c;
+
+  /* 2. Destaques Clínicos / Botões de Ação Principal */
+  --color-verde-clinico: #486b4f;     /* Clinical Green */
+  --color-clinical-green: #486b4f;
+
+  /* 3. Textos Principais / Títulos e Contrastes */
+  --color-cinza-ardosia: #0f172a;     /* Deep Slate */
+  --color-deep-slate: #0f172a;
+
+  /* 4. Fundos Suaves / Cards Secundários / Badges */
+  --color-verde-suave: #f4f7f5;       /* Soft Sage */
+  --color-soft-sage: #f4f7f5;
+
+  /* 5. Fundo Principal Acolhedor da Aplicação */
+  --color-fundo-acolhedor: #fbf9f6;   /* Warm Clay */
+  --color-warm-clay: #fbf9f6;
+
+  /* 6. Bordas Sutis / Divisores e Inputs */
+  --color-borda-suave: #eae6df;       /* Muted Border */
+  --color-muted-border: #eae6df;
+
+  /* ========================================================
+     TIPOGRAFIA OFICIAL
+     ======================================================== */
+  --font-display: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'General Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: var(--color-fundo-acolhedor);
+  --foreground: var(--color-cinza-ardosia);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Classes Utilitárias Diretas em Português */
+.fonte-titulo {
+  font-family: var(--font-display);
+}
+
+.fonte-texto {
+  font-family: var(--font-body);
+}
+
+.fonte-codigo {
+  font-family: var(--font-code);
 }
