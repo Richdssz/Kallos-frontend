@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeSlash, Lock, EnvelopeSimple } from "@phosphor-icons/react";
 
@@ -6,32 +7,33 @@ export default function LoginPage() {
     const [senhaVisivel, setSenhaVisivel] = useState(false);
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#f4f7f5] px-4 py-10">
-      <section className="w-full max-w-md rounded-2xl border border-[#eae6df] bg-white p-8 shadow-sm">
+      
+<section className="w-full max-w-md rounded-2xl border border-[#eae6df] bg-white p-8 shadow-sm">
 
-        {/* Identidade visual */}
-        <header className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#28382c] text-white">
-            <Lock size={28} weight="light" />
-          </div>
+  {/* Identidade visual */}
+  <header className="mb-8 text-center">
+    <div className="mx-auto mb-6 w-full max-w-[280px]">
+      <Image
+        src="/logo-kallos.png"
+        alt="Logo Kallos Psi"
+        width={589}
+        height={256}
+        className="h-auto w-full object-contain"
+        priority
+      />
+    </div>
+  </header>
 
-          <h1 className="fonte-titulo text-3xl font-bold text-[#28382c]">
-            Kallos Psi
-          </h1>
+  {/* Título do formulário */}
+  <div className="mb-6">
+    <h2 className="fonte-titulo text-2xl font-bold text-[#0f172a]">
+      Bem-vindo de volta
+       </h2>
 
-          <p className="mt-2 text-sm text-[#647067]">
-            Plataforma de Gestão Clínica
-          </p>
-        </header>
-
-        {/* Título do formulário */}
-        <div className="mb-6">
-          <h2 className="fonte-titulo text-2xl font-bold text-[#0f172a]">
-            Bem-vindo de volta
-          </h2>
-          <p className="mt-2 text-sm text-[#647067]">
-            Entre com suas credenciais para acessar sua conta.
-          </p>
-        </div>
+    <p className="mt-2 text-sm text-[#647067]">
+      Entre com suas credenciais para acessar sua conta.
+    </p>
+  </div>
 
         {/* Formulário */}
         <form className="space-y-5">
