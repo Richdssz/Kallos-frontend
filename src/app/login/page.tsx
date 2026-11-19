@@ -5,6 +5,24 @@ import { ArrowRight, Eye, EyeSlash, Lock, EnvelopeSimple } from "@phosphor-icons
 
 export default function LoginPage() {
     const [senhaVisivel, setSenhaVisivel] = useState(false);
+    const [email, setEmail] = useState("");
+const [senha, setSenha] = useState("");
+const [erro, setErro] = useState("");
+function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  if (!email.trim() || !senha.trim()) {
+    setErro("Preencha todos os campos.");
+    return;
+  }
+
+  if (!email.includes("@") || !email.includes(".")) {
+    setErro("Digite um e-mail válido.");
+    return;
+  }
+
+  setErro("");
+  alert("Dados preenchidos corretamente!");
+}
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#f4f7f5] px-4 py-10">
       
@@ -36,7 +54,12 @@ export default function LoginPage() {
   </div>
 
         {/* Formulário */}
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
+            {erro && (
+  <p className="text-sm text-red-600">
+    {erro}
+  </p>
+)}
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#28382c]">
               E-mail
@@ -47,6 +70,8 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-[#a1aaa3]"
               />
@@ -63,6 +88,8 @@ export default function LoginPage() {
               <input
                 id="password"
                 type={senhaVisivel ? "text" : "password"}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 placeholder="Digite sua senha"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-[#a1aaa3]"
               />
@@ -86,7 +113,7 @@ export default function LoginPage() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#28382c] py-3.5 font-semibold text-white transition hover:bg-[#486b4f]"
           >
             Entrar
