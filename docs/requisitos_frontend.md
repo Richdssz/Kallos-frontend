@@ -1,550 +1,268 @@
-# ESPECIFICAÇÃO DE REQUISITOS DE SOFTWARE
-## Kallos Psi — Plataforma de Gestão Clínica para Psicologia
-### Requisitos Funcionais do Frontend, Regras de Negócio e Arquitetura de Telas
+# Documento de Requisitos de Front-end
 
-| Campo | Detalhe |
+## Sistema de Gestão para Consultório Psicológico — Kallos Psi
+
+| Campo | Informação |
 |---|---|
+| **Projeto** | Kallos Psi |
+| **Documento** | Requisitos de front-end |
 | **Versão** | 1.0 |
-| **Data** | 07 de novembro de 2026 |
-| **Equipe** | Richard Silva, Matheus Alves, Micael Barros, Ruan Ricardo e Rafael Pimentel |
-| **Frontend** | Next.js 14 · Zustand · TanStack Query |
-| **API consumida** | API REST em Spring Boot 3 / Java 21 (requisitos do backend em documento próprio) |
+| **Data** | 19 de novembro de 2026 |
+| **Equipe** | Rafael Pimentel, Matheus Alves, Ruan Ricardo, Richard Silva e Micael Barros |
+| **Fonte oficial** | [`Kallos_Psi_Requisitos.pdf`](./Kallos_Psi_Requisitos.pdf) |
 
----
-
-## Controle de Versões
-
-| Versão | Data | Descrição | Responsável |
-|---|---|---|---|
-| 1.0 | 07/11/2026 | Requisitos funcionais do frontend, regras de negócio, integrações e divisão de telas. | Equipe do projeto |
-
----
+> Esta versão em Markdown organiza os requisitos do PDF oficial para consulta rápida. Em caso de divergência, prevalece o arquivo `Kallos_Psi_Requisitos.pdf`.
 
 ## Sumário
 
 1. [Introdução](#1-introdução)
-   - 1.1 Descrição do projeto
-   - 1.2 Intenção do projeto
-   - 1.3 Escopo deste documento
-   - 1.4 Definições e siglas
-   - 1.5 Referências
-2. [Visão Geral do Sistema](#2-visão-geral-do-sistema)
-   - 2.1 Perfis de usuário e atores
-   - 2.2 Premissas e restrições
-3. [Arquitetura e Taxonomia das 11 Telas](#3-arquitetura-e-taxonomia-das-11-telas)
-4. [Requisitos Funcionais do Frontend](#4-requisitos-funcionais-do-frontend)
-   - 4.1 Autenticação e Acesso
-   - 4.2 Painel Geral
-   - 4.3 Gestão de Pacientes
-   - 4.4 Agenda e Consultas
-   - 4.5 Prontuário e CID
-   - 4.6 Queixas e Abordagens
-   - 4.7 Sala de Teleconsulta
-   - 4.8 Financeiro
-   - 4.9 Documentos e Atestados
-   - 4.10 Configurações
-5. [Regras de Negócio](#5-regras-de-negócio)
-6. [Requisitos Não Funcionais](#6-requisitos-não-funcionais)
-7. [Integrações Externas](#7-integrações-externas)
-8. [Modelo de Dados de Referência](#8-modelo-de-dados-de-referência)
-   - 8.1 Diagrama Entidade-Relacionamento
-   - 8.2 Entidades e relações
-   - 8.3 Campo JSON do prontuário
-   - 8.4 Resumo das cardinalidades
-9. [Design System](#9-design-system)
-   - 9.1 Paleta de cores
-   - 9.2 Tipografia e ícones
-10. [Divisão de Responsabilidades](#10-divisão-de-responsabilidades)
-    - 10.1 Telas por integrante
-    - 10.2 Regras de trabalho
-11. [Critérios de Entrega e Aceite](#11-critérios-de-entrega-e-aceite)
-    - 11.1 Roteiro do vídeo de demonstração (3 minutos)
-    - 11.2 Regras de envio e penalidades
-    - 11.3 Priorização por ciclo
-12. [Matriz de Rastreabilidade](#12-matriz-de-rastreabilidade)
-13. [Diretrizes Técnicas do Frontend](#13-diretrizes-técnicas-do-frontend)
-    - 13.1 Cliente HTTP e estado
-    - 13.2 Estados de carregamento e erro
-
----
+2. [Atendimento às exigências do projeto](#2-atendimento-às-exigências-do-projeto)
+3. [Equipe, telas e rotas](#3-equipe-telas-e-rotas)
+4. [Diretrizes transversais](#4-diretrizes-transversais)
+5. [Requisitos funcionais por tela](#5-requisitos-funcionais-por-tela)
+6. [Requisitos não funcionais de front-end](#6-requisitos-não-funcionais-de-front-end)
 
 ## 1. Introdução
 
-### 1.1 Descrição do projeto
-O Kallos Psi é uma plataforma web de gestão clínica voltada a psicólogos e consultórios de psicologia. O sistema reúne em um único ambiente o cadastro de pacientes, a agenda de consultas, o prontuário sigiloso com classificação CID-10/11, o catálogo de queixas clínicas, a teleconsulta, o controle financeiro de honorários e a emissão de documentos e atestados.
+### 1.1 Objetivo
 
-A solução é composta por um frontend em Next.js 14 e por uma API REST em Spring Boot 3 (Java 21) com persistência em PostgreSQL. Este documento especifica o frontend; os requisitos do backend serão documentados à parte.
+Este documento especifica os requisitos do front-end do Kallos Psi, aplicação web de gestão para consultório psicológico. Ele define, para cada tela, o que deve ser exibido, como o usuário interage e quais regras a interface precisa respeitar, e serve de referência para o desenvolvimento e a avaliação do projeto.
 
-### 1.2 Intenção do projeto
-O projeto tem duas intenções complementares:
-- **Intenção de produto**: substituir planilhas, agendas de papel e ferramentas dispersas por um sistema único, seguro e organizado, que reduza o trabalho administrativo do psicólogo e preserve o sigilo das informações clínicas, em conformidade com a LGPD e o Código de Ética Profissional do Psicólogo.
-- **Intenção acadêmica**: demonstrar, em projeto final de grupo com 5 integrantes, o domínio de uma arquitetura full stack completa: CRUDs com persistência real, as 3 cardinalidades do modelo relacional (1-1, 1-N e N-N), consumo de APIs externas, autenticação com JWT e divisão comprovada de trabalho no histórico do GitHub.
+### 1.2 Escopo
 
-### 1.3 Escopo deste documento
+O documento cobre as 8 telas da aplicação, suas subtelas e estados, a organização de rotas, o consumo de dados, o estado global e a identidade visual. Os requisitos de back-end são tratados em documento próprio e não fazem parte deste.
 
-**Dentro do escopo:**
-- As 11 telas da aplicação e seus requisitos funcionais de frontend.
-- Regras de negócio e requisitos não funcionais que afetam a interface.
-- Consumo da API do sistema e das integrações externas BrasilAPI (CEP e feriados) e Jitsi Meet.
-- Design system, divisão de telas entre os integrantes e critérios de entrega.
+### 1.3 Tecnologias de front-end
 
-**Fora do escopo:**
-- Requisitos e implementação do backend, em documento próprio.
-- Acesso direto do paciente ao sistema (portal do paciente).
-- Emissão fiscal de notas e integração bancária.
-- Aplicativo móvel nativo.
-
-### 1.4 Definições e siglas
-
-| Termo | Significado |
+| Tecnologia | Uso no projeto |
 |---|---|
-| **RF-F** | Requisito Funcional de Frontend. |
-| **RNF** | Requisito Não Funcional: qualidade, restrição ou padrão técnico. |
-| **RN** | Regra de Negócio: política que condiciona o comportamento do sistema. |
-| **CRP** | Conselho Regional de Psicologia: número de registro profissional do psicólogo. |
-| **CID-10/11** | Classificação Internacional de Doenças, 10ª e 11ª revisões (ex.: F41.1). |
-| **TCC** | Terapia Cognitivo-Comportamental. |
-| **CRUD** | Create, Read, Update, Delete: operações básicas de persistência. |
-| **JWT** | JSON Web Token: token de autenticação assinado. |
-| **LGPD** | Lei Geral de Proteção de Dados Pessoais. |
-| **TAG / TDAH** | Transtorno de Ansiedade Generalizada / Transtorno de Déficit de Atenção e Hiperatividade. |
+| Next.js (App Router) | Estrutura da aplicação, roteamento entre páginas com `next/link` e `useRouter`, layouts compartilhados e proteção de rotas. |
+| TanStack Query | Busca, cache, sincronização e atualização dos dados vindos da API. |
+| Zustand | Estado global da sessão, identidade do consultório e preferências de interface. |
+| React Hook Form + Zod | Formulários e validação de campos; pode ser substituído por equivalente. |
+| CSS (Tailwind CSS recomendado) | Estilização conforme o sistema de design da seção 4.5. |
 
-### 1.5 Referências
-- Plano Mestre do Projeto Final: Especificação Oficial de Telas e Arquitetura Técnica.
-- Parecer Técnico e Respostas aos Pontos em Aberto, de Richard da Silva Souza (07/11/2026).
-- Documentação da BrasilAPI e do Jitsi Meet.
+## 2. Atendimento às exigências do projeto
 
----
+| Exigência | Como é atendida | Referência |
+|---|---|---|
+| Back-end com banco de dados | O front-end consome a API REST do projeto, que persiste os dados em banco relacional. | Seção 4.2 |
+| Login, logout e esqueci minha senha | Telas Login e Redefinir senha, com encerramento de sessão no menu lateral. | RF-F09 a RF-F11 |
+| CRUD completo de duas entidades | Pacientes e Sessões. | RF-F12 a RF-F19, RF-F26 a RF-F32, RF-F38 |
+| Exibição de outras entidades, uma por participante | Consultório, Psicólogo, Prontuário e evoluções e indicadores consolidados. | RF-F01 a RF-F08, RF-F20 a RF-F25, RF-F39 a RF-F42 |
+| TanStack Query ou SWR | TanStack Query em toda comunicação com a API. | Seção 4.2 |
+| Ao menos 1 tela por participante, com Next Router | 8 telas distribuídas entre os 5 integrantes, ligadas por `next/link` e `useRouter`. | Seções 3 e 4.1 |
+| Gerenciamento de estado global | Zustand, com escolha explícita do que fica no estado global. | Seção 4.3 |
+| CSS cuidado, bonito e funcional | Sistema de design próprio e estados de interface padronizados. | Seções 4.4, 4.5 e 6 |
 
-## 2. Visão Geral do Sistema
+## 3. Equipe, telas e rotas
 
-### 2.1 Perfis de usuário e atores
+### 3.1 Responsabilidades
 
-| Ator | Papel no sistema |
+| Integrante | Telas sob responsabilidade |
 |---|---|
-| **Psicólogo** | Único usuário autenticado. Identificado por e-mail ou CRP. Em consultório com vários profissionais, cada psicólogo vê apenas os próprios pacientes, sessões e prontuários. |
-| **Paciente** | Entidade gerenciada pelo psicólogo. Não possui acesso direto ao sistema nesta versão. |
-| **Serviços externos** | BrasilAPI (CEP e feriados) e Jitsi Meet (videochamada), consumidos pela interface. |
+| Rafael Pimentel | Painel geral |
+| Matheus Alves | Configurações |
+| Ruan Ricardo | Login, Redefinir senha e Criar conta |
+| Richard Silva | Pacientes e Agenda e consultas |
+| Micael Barros | Prontuário e CID |
 
-### 2.2 Premissas e restrições
-- Frontend em Next.js 14 com Zustand (estado global e sessão) e TanStack Query (cache de dados da API).
-- A biblioteca de componentes é de livre escolha da equipe (Tailwind CSS, Radix UI, Mantine ou MUI), priorizando acessibilidade e padronização visual.
-- O frontend consome a API REST do sistema sob o prefixo `/api/v1`; os dados exibidos seguem o modelo de referência do capítulo 8.
-- Nenhum emoji na interface; ícones da biblioteca Phosphor Icons (padrão) ou Lucide.
+### 3.2 Mapa de telas
 
----
+| Nº | Tela | Rota | Responsável | Acesso |
+|---:|---|---|---|---|
+| 01 | Configurações | `/configuracoes` | Matheus Alves | Autenticado; conteúdo varia por perfil |
+| 02 | Painel geral | `/painel` | Rafael Pimentel | Autenticado |
+| 03 | Login | `/login` | Ruan Ricardo | Público |
+| 04 | Redefinir senha | `/redefinir-senha` | Ruan Ricardo | Público |
+| 05 | Pacientes | `/pacientes` | Richard Silva | Autenticado |
+| 06 | Prontuário e CID | `/prontuario` | Micael Barros | Autenticado, restrito a psicólogos vinculados |
+| 07 | Agenda e consultas | `/agenda` | Richard Silva | Autenticado |
+| 08 | Criar conta | `/criar-conta` | Ruan Ricardo | Público |
 
-## 3. Arquitetura e Taxonomia das 11 Telas
+## 4. Diretrizes transversais
 
-A aplicação é organizada em três blocos: acesso, núcleo clínico e ferramentas de suporte.
+As diretrizes abaixo valem para todas as telas e não pertencem a um integrante específico.
 
-| Módulo | Nº | Tela | Descrição | Responsável |
-|---|---|---|---|---|
-| **Autenticação e Acesso** | 1 | Login | Autenticação do psicólogo via e-mail/CRP, com JWT persistido no Zustand. | Ruan Ricardo |
-| | 2 | Esqueci Minha Senha | Recuperação de senha com envio de código/token. | Ruan Ricardo |
-| **Núcleo Clínico** | 3 | Painel Geral | Dashboard com métricas executivas, faturamento e atendimentos de hoje. | Micael Barros |
-| | 4 | Gestão de Pacientes | CRUD 1: cadastro, consulta, edição e exclusão com busca preditiva. | Richard Silva |
-| | 5 | Agenda e Consultas | CRUD 2: agendamento (1-N), status e vínculo N-N com queixas. | Richard Silva |
-| | 6 | Prontuário e CID | Relação 1-1: prontuário sigiloso com CID principal e secundário e notas de TCC. | Matheus Alves |
-| | 7 | Queixas e Abordagens | Relação N-N: catálogo de queixas clínicas indexadas às sessões. | Matheus Alves |
-| **Ferramentas de Suporte** | 8 | Sala de Teleconsulta | Videochamada criptografada via Jitsi Meet com bloco de notas lateral. | Matheus Alves |
-| | 9 | Financeiro | Honorários, faturamento mensal e recibos para reembolso. | Rafael Pimentel |
-| | 10 | Documentos e Atestados | Declaração de comparecimento e laudos em PDF. | Rafael Pimentel |
-| | 11 | Configurações | Dados do consultório, logo, valor padrão da sessão e número do CRP. | Micael Barros |
+### 4.1 Roteamento com Next Router
 
-### Submódulos da tela Gestão de Pacientes (tela 4)
+- A navegação usa exclusivamente `next/link` e `useRouter`, sem recarregar a página.
+- Telas autenticadas compartilham um layout com menu lateral, cartão do usuário, botão Sair e barra superior.
+- O menu contém Painel geral, Pacientes, Agenda e consultas, Prontuário e CID e Configurações.
+- Rotas protegidas por *middleware*: usuário sem sessão vai para `/login`; usuário autenticado em `/login`, `/criar-conta` ou `/redefinir-senha` vai para `/painel`.
+- Há rotas dinâmicas para `/pacientes/[id]` e `/prontuario/[pacienteId]` e uma página 404 personalizada.
 
-| Item | Submódulo | Descrição |
+### 4.2 Dados do servidor com TanStack Query
+
+Toda leitura e escrita na API passa por um cliente HTTP único e por `useQuery` e `useMutation`. Dados do servidor ficam no cache do TanStack Query, nunca no estado global. Após cada mutação, as consultas afetadas são invalidadas.
+
+| Tela | Consultas | Mutações e invalidação |
 |---|---|---|
-| **4.1** | Listagem Principal | Tabela paginada com busca preditiva por Nome/CPF e filtro por status. |
-| **4.2** | Visualização (Drawer) | Modo leitura em drawer lateral com histórico rápido do paciente. |
-| **4.3** | Formulário de Edição/Cadastro | Formulário unificado com abas temáticas. |
-| **4.3.1** | Dados Pessoais | Nome, CPF validado, data de nascimento e canais de contato. |
-| **4.3.2** | Endereço (BrasilAPI) | Autocompletar a partir do CEP de 8 dígitos. |
-| **4.3.3** | Definições Clínicas | Honorário customizado por sessão, vínculo com diagnóstico CID e observações do paciente. |
-| **4.4** | Sessões Vinculadas | Logs de presença (relação 1-N) e atalho direto para honorários. |
+| Configurações | `consultorio`, `perfil` | Salvar consultório ou perfil; invalida a chave correspondente. |
+| Painel geral | `indicadores`, `sessoes-hoje`, `ritmo-mes` | Somente leitura. |
+| Login e Criar conta | — | Autenticar e cadastrar; Sair limpa todo o cache. |
+| Pacientes | `pacientes` (filtros, página), `paciente` (id) | Criar, editar, desativar e reativar; invalida `pacientes` e `paciente`. |
+| Agenda e consultas | `sessoes` (semana, filtros) | Agendar, editar, cancelar e concluir; invalida `sessoes`, `indicadores` e `sessoes-hoje`. |
+| Prontuário e CID | `prontuario` (pacienteId), `cid` (termo) | Editar e registrar evolução; invalida `prontuario`. |
 
----
+### 4.3 Estado global com Zustand
 
-## 4. Requisitos Funcionais do Frontend
+O estado global guarda somente dados pequenos, compartilhados e necessários na primeira renderização. Dados clínicos e listas nunca entram nele.
 
-Requisitos da interface em Next.js 14, agrupados por tela. A coluna **Consome (API)** indica a rota da API do sistema, ou o serviço externo, que cada requisito utiliza; as rotas são a proposta de contrato, a confirmar com o backend antes da codificação. As telas são sempre citadas pelo nome, seguido do número entre parênteses.
-
-Prioridade: **Essencial** (indispensável para a entrega), **Importante** ou **Desejável**.
-
-### 4.1 Autenticação e Acesso
-**Telas:** Login (tela 1) e Esqueci Minha Senha (tela 2) — **Responsável:** Ruan Ricardo
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F01** | Login do psicólogo | Na tela Login, o psicólogo informa e-mail ou CRP e senha; em caso de sucesso, é redirecionado ao Painel Geral. | `POST /auth/login` | Essencial |
-| **RF-F02** | Persistência de sessão | O JWT e os dados do usuário recebidos no login são guardados no Zustand Store e mantêm a sessão durante a navegação. | `POST /auth/login` | Essencial |
-| **RF-F03** | Recuperação de senha | A tela Esqueci Minha Senha solicita o e-mail, aciona o envio do código/token e permite cadastrar a nova senha. | `POST /auth/forgot-password`<br>`POST /auth/reset-password` | Essencial |
-| **RF-F04** | Proteção de rotas | Todas as telas, exceto Login e Esqueci Minha Senha, exigem sessão ativa. Sem JWT válido, ou ao receber 401 da API, o usuário volta à tela Login. | Resposta 401 da API | Essencial |
-
-### 4.2 Painel Geral
-**Telas:** Painel Geral (tela 3) — **Responsável:** Micael Barros
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F05** | Métricas executivas | O Painel Geral exibe cartões com indicadores do consultório (pacientes ativos, sessões do período, entre outros). | `GET /dashboard/resumo` | Importante |
-| **RF-F06** | Faturamento | O Painel Geral apresenta o faturamento do período corrente. | `GET /dashboard/resumo` | Importante |
-| **RF-F07** | Atendimentos de hoje | O Painel Geral lista as sessões do dia com horário, paciente, modalidade e status. | `GET /dashboard/atendimentos-hoje` | Importante |
-
-### 4.3 Gestão de Pacientes
-**Telas:** Gestão de Pacientes (tela 4), com Listagem Principal (4.1), Visualização em Drawer (4.2), Formulário de Edição/Cadastro (4.3, abas 4.3.1 a 4.3.3) e Sessões Vinculadas (4.4) — **Responsável:** Richard Silva
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F08** | Listagem de pacientes | A Listagem Principal (4.1) mostra os pacientes em tabela paginada. | `GET /pacientes?busca=&status=&page=` | Essencial |
-| **RF-F09** | Busca preditiva | A Listagem Principal oferece busca por nome e CPF, atualizando os resultados enquanto o usuário digita (com debounce). | `GET /pacientes?busca=&status=&page=` | Essencial |
-| **RF-F10** | Filtro por status | A Listagem Principal permite filtrar os pacientes pelo status do cadastro. | `GET /pacientes?busca=&status=&page=` | Importante |
-| **RF-F11** | Visualização em drawer | Ao selecionar um paciente, a Visualização em Drawer (4.2) abre em modo leitura com o histórico rápido do paciente. | `GET /pacientes/{id}`<br>`GET /pacientes/{id}/sessoes` | Importante |
-| **RF-F12** | Cadastro de paciente | O Formulário de Edição/Cadastro (4.3) cria um paciente, com abas temáticas e salvamento único. | `POST /pacientes` | Essencial |
-| **RF-F13** | Edição de paciente | O mesmo formulário carrega os dados atuais do paciente e os atualiza. | `GET /pacientes/{id}`<br>`PUT /pacientes/{id}` | Essencial |
-| **RF-F14** | Exclusão de paciente | A Listagem Principal permite excluir um paciente, com diálogo de confirmação. | `DELETE /pacientes/{id}` | Essencial |
-| **RF-F15** | Aba Dados Pessoais | A aba Dados Pessoais (4.3.1) coleta nome, CPF validado, data de nascimento, telefone, e-mail e contato de emergência, com validação de CPF no cliente. | `POST /pacientes`<br>`PUT /pacientes/{id}` | Essencial |
-| **RF-F16** | Aba Endereço (BrasilAPI) | Na aba Endereço (4.3.2), ao digitar 8 dígitos de CEP, a tela consulta a BrasilAPI (CEP v2) e preenche logradouro, bairro, cidade e UF. | BrasilAPI (API externa) | Essencial |
-| **RF-F17** | Aba Definições Clínicas | A aba Definições Clínicas (4.3.3) define o honorário customizado por sessão, o vínculo com diagnóstico CID (com sugestões do catálogo de CIDs) e o campo de observações e histórico preliminar do paciente. | `POST /pacientes`<br>`PUT /pacientes/{id}`<br>`GET /cids?busca=` | Importante |
-| **RF-F18** | Sessões vinculadas | A seção Sessões Vinculadas (4.4) exibe os logs de presença do paciente (relação 1-N) e um atalho direto para o Financeiro (tela 9). | `GET /pacientes/{id}/sessoes` | Importante |
-
-### 4.4 Agenda e Consultas
-**Telas:** Agenda e Consultas (tela 5) — **Responsável:** Richard Silva
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F19** | Agendamento de sessão | A tela Agenda e Consultas permite agendar sessão para um paciente, informando data e hora, duração, valor e modalidade. | `POST /sessoes` | Essencial |
-| **RF-F20** | Edição e cancelamento | A Agenda permite remarcar, editar e excluir sessões. | `PUT /sessoes/{id}`<br>`DELETE /sessoes/{id}` | Essencial |
-| **RF-F21** | Status da sessão | Cada sessão exibe e permite alterar o status (por exemplo Concluída ou Cancelada). | `PATCH /sessoes/{id}/status` | Essencial |
-| **RF-F22** | Vínculo com queixas | No agendamento, o psicólogo seleciona uma ou mais queixas clínicas da sessão (N-N), listadas a partir do catálogo da tela Queixas e Abordagens. | `PUT /sessoes/{id}/queixas`<br>`GET /queixas?busca=` | Essencial |
-| **RF-F23** | Filtros e horários | A Agenda oferece filtros por paciente, status e período e a visualização dos horários. | `GET /sessoes?paciente=&status=&de=&ate=` | Importante |
-| **RF-F24** | Alerta de feriado | Ao escolher a data (evento `onChange`), a Agenda consulta os feriados nacionais do ano da data na BrasilAPI e os feriados estaduais da UF do consultório na API do sistema. Se for feriado, exibe um aviso amigável, sem bloquear o agendamento. | BrasilAPI (API externa)<br>`GET /feriados/estaduais?uf=&ano=` | Importante |
-| **RF-F25** | Modalidade e acesso à teleconsulta | Sessões online exibem um atalho para a Sala de Teleconsulta (tela 8). | `POST /sessoes`<br>`PUT /sessoes/{id}` | Importante |
-
-### 4.5 Prontuário e CID
-**Telas:** Prontuário e CID (tela 6) — **Responsável:** Matheus Alves
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F26** | Prontuário do paciente | A tela Prontuário e CID exibe e cria o prontuário único do paciente (relação 1-1), com data de abertura e observações gerais. | `POST /pacientes/{id}/prontuario`<br>`GET /pacientes/{id}/prontuario` | Essencial |
-| **RF-F27** | Classificação CID | O psicólogo registra o CID principal e o CID secundário (código e descrição), com autocomplete a partir do catálogo de CIDs. | `PUT /prontuarios/{id}`<br>`GET /cids?busca=` | Essencial |
-| **RF-F28** | Timeline de evoluções | A tela apresenta a linha do tempo de evoluções, construída a partir das sessões do paciente. | `GET /pacientes/{id}/sessoes` | Importante |
-| **RF-F29** | Anamnese | A tela permite registrar e editar a anamnese em campo de leitura confortável, gravada nos dados clínicos do prontuário. | `PUT /prontuarios/{id}` | Importante |
-| **RF-F30** | Notas de TCC | A tela permite registrar notas de Terapia Cognitivo-Comportamental, gravadas nos dados clínicos do prontuário. | `PUT /prontuarios/{id}` | Importante |
-| **RF-F31** | Aviso de acesso negado | Se a API responder 403, a tela exibe mensagem de acesso restrito, sem mostrar conteúdo clínico. | Resposta 403 da API | Essencial |
-
-### 4.6 Queixas e Abordagens
-**Telas:** Queixas e Abordagens (tela 7) — **Responsável:** Matheus Alves
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F32** | Catálogo de queixas | A tela Queixas e Abordagens lista, cria, edita e exclui queixas clínicas (ex.: TAG, Burnout, Luto, TDAH) com código, CID, nome e descrição. | `GET /queixas?busca=`<br>`POST /queixas`<br>`PUT /queixas/{id}`<br>`DELETE /queixas/{id}` | Essencial |
-| **RF-F33** | Sessões da queixa | Ao abrir uma queixa, a tela mostra as sessões a ela indexadas (N-N). | `GET /queixas/{id}/sessoes` | Essencial |
-| **RF-F34** | Abordagens terapêuticas | A tela apresenta as abordagens associadas a cada queixa, conforme o título Queixas e Abordagens. | `GET /queixas?busca=` | Desejável |
-
-### 4.7 Sala de Teleconsulta
-**Telas:** Sala de Teleconsulta (tela 8) — **Responsável:** Matheus Alves
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F35** | Videochamada criptografada | A Sala de Teleconsulta abre a chamada Jitsi Meet da sessão na sala `kallospsi-{sessaoId}-{hashSeguro}`, com o identificador recebido da API. | `GET /sessoes/{id}/sala`<br>Jitsi Meet (API externa) | Importante |
-| **RF-F36** | Bloco de notas lateral | A sala exibe um bloco de notas ao lado do vídeo, que pode ser salvo no prontuário do paciente. | `PUT /prontuarios/{id}` | Importante |
-
-### 4.8 Financeiro
-**Telas:** Financeiro (tela 9) — **Responsável:** Rafael Pimentel
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F37** | Controle de honorários | A tela Financeiro mostra os honorários por sessão e por paciente. | `GET /financeiro/resumo?mes=&ano=` | Importante |
-| **RF-F38** | Faturamento mensal | A tela Financeiro apresenta o faturamento consolidado por mês. | `GET /financeiro/resumo?mes=&ano=` | Importante |
-| **RF-F39** | Recibos para reembolso | A tela Financeiro baixa o recibo em PDF de uma sessão, para reembolso de convênio. | `GET /financeiro/recibos/{sessaoId}` | Importante |
-
-### 4.9 Documentos e Atestados
-**Telas:** Documentos e Atestados (tela 10) — **Responsável:** Rafael Pimentel
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F40** | Declaração de comparecimento | A tela Documentos e Atestados emite a declaração de comparecimento para trabalho ou faculdade a partir de uma sessão. | `GET /documentos/declaracao?sessaoId=` | Importante |
-| **RF-F41** | Laudos em PDF | A tela gera e baixa laudos em PDF de um paciente. | `GET /documentos/laudo?pacienteId=` | Desejável |
-
-### 4.10 Configurações
-**Telas:** Configurações (tela 11) — **Responsável:** Micael Barros
-
-| ID | Requisito | Descrição e regra | Consome (API) | Prioridade |
-|---|---|---|---|---|
-| **RF-F42** | Dados do consultório | A tela Configurações permite ver e editar os dados do consultório (razão social e endereço). | `GET /configuracoes`<br>`PUT /configuracoes` | Importante |
-| **RF-F43** | Valor padrão da sessão | A tela permite definir o valor padrão da sessão, usado quando o paciente não tem honorário customizado. | `GET /configuracoes`<br>`PUT /configuracoes` | Importante |
-| **RF-F44** | Número do CRP | A tela permite registrar o número do CRP do psicólogo. | `GET /psicologos/me`<br>`PUT /psicologos/me` | Importante |
-| **RF-F45** | Logo do consultório | A tela permite enviar a imagem da logo do consultório (upload), exibida na própria tela e nos recibos e documentos emitidos. | `POST /configuracoes/logo` | Importante |
-
----
-
-## 5. Regras de Negócio
-
-| ID | Regra | Origem |
+| Store | O que guarda | Quem consome |
 |---|---|---|
-| **RN01** | Cada paciente possui no máximo um prontuário, e cada prontuário pertence a exatamente um paciente (relação 1-1). | RF-F26 |
-| **RN02** | Cada sessão pertence a um único psicólogo e a um único paciente; psicólogo e paciente podem ter várias sessões (1-N). | RF-F19 |
-| **RN03** | Uma sessão pode ter várias queixas clínicas, e uma queixa pode estar em várias sessões (N-N). | RF-F22, RF-F33 |
-| **RN04** | O CPF do paciente deve ser validado (dígitos verificadores) antes de salvar o cadastro. | RF-F15 |
-| **RN05** | O honorário customizado do paciente prevalece sobre o valor padrão da sessão definido na configuração do consultório. | RF-F17, RF-F43 |
-| **RN06** | O CEP deve ter 8 dígitos para disparar a consulta à BrasilAPI. | RF-F16 |
-| **RN07** | Datas que coincidem com feriado nacional ou estadual geram aviso ao psicólogo, que nunca bloqueia o agendamento (há atendimentos de plantão em feriados). | RF-F24 |
-| **RN08** | Os dados do prontuário são sigilosos e visíveis somente ao psicólogo responsável. | RF-F31 |
-| **RN09** | A logo enviada deve ser uma imagem dentro do limite de tamanho definido pela equipe. | RF-F45 |
-| **RN10** | O identificador da sala de teleconsulta segue o padrão `kallospsi-{sessaoId}-{hashSeguro}`. | RF-F35 |
-| **RN11** | O prontuário aceita CID principal e CID secundário, cada um com código e descrição, para registrar comorbidades. | RF-F27 |
+| `authStore` | Usuário, perfil de acesso e situação da sessão. | Layout, Configurações, rotas protegidas e Painel geral. |
+| `consultorioStore` | Nome, logotipo e valor padrão da sessão. | Layout, Configurações e Agenda. |
+| `uiStore` | Menu lateral recolhido e notificações; única store persistida. | Layout e todas as telas. |
 
----
+Pacientes, sessões, prontuários e evoluções ficam no TanStack Query; valores de formulário ficam no React Hook Form; credenciais e token ficam sob responsabilidade do serviço de autenticação. Nenhum dado clínico ou pessoal é gravado em `localStorage`.
 
-## 6. Requisitos Não Funcionais
+### 4.4 Estados de interface
 
-| ID | Categoria | Requisito |
+- **Carregamento:** esqueletos no lugar do conteúdo e progresso nos botões.
+- **Vazio:** mensagem objetiva, ícone e ação sugerida quando aplicável.
+- **Erro:** linguagem clara, opção de tentar novamente e erros junto aos campos.
+- **Sucesso e confirmação:** notificação após salvar e confirmação antes de ações destrutivas.
+
+### 4.5 Sistema de design
+
+A interface é sóbria, acolhedora e clínica, com verdes orgânicos sobre fundo creme.
+
+| Token | Cor | Uso |
 |---|---|---|
-| **RNF01** | Arquitetura | Frontend em Next.js 14 que consome a API REST do sistema em `/api/v1`. |
-| **RNF02** | Estado e dados | Zustand para estado global e sessão; TanStack Query para cache e sincronização de dados da API. |
-| **RNF03** | Segurança | JWT mantido no Zustand e enviado no cabeçalho `Authorization: Bearer`; telas protegidas por sessão ativa. |
-| **RNF04** | Privacidade | Teleconsulta sobre WebRTC criptografado; conteúdo clínico nunca exibido quando a API nega o acesso. |
-| **RNF05** | Interface | Design system padronizado (capítulo 9), biblioteca de componentes de livre escolha da equipe, ícones Phosphor ou Lucide e zero emojis. |
-| **RNF06** | Acessibilidade | Componentes acessíveis por teclado e leitor de tela. |
-| **RNF07** | Manutenibilidade | Histórico de commits no GitHub que comprove a participação individual de cada integrante; um responsável por tela para evitar conflitos de merge. |
+| Verde Kallos | `#334936` | Menu lateral, botões primários e cabeçalhos |
+| Verde profundo | `#1D2C20` | Títulos e destaques |
+| Verde sálvia | `#ACBFA9` | Acentos, gráficos e detalhes |
+| Sálvia claro | `#E6ECE2` | Bordas, selos e fundos de apoio |
+| Creme | `#FAF6F2` | Fundo das páginas |
+| Verde acinzentado | `#7F8F7A` | Textos secundários e legendas |
 
----
+- Fonte sem serifa geométrica; fonte monoespaçada para horários, CPF, CRP e códigos.
+- Cartões arredondados, botões verdes com ícone, selos semânticos, tabelas discretas e ícones de traço fino.
+- Cabeçalho com sobretítulo, título, subtítulo e ação principal à direita.
+- Cada tela documenta seus fluxos e estados com a referência do requisito.
 
-## 7. Integrações Externas
+## 5. Requisitos funcionais por tela
 
-| API / Serviço | Endpoint | Papel no projeto | Autenticação |
-|---|---|---|---|
-| **API do sistema** | `http://localhost:8080/api/v1` | API REST consumida por todas as telas. | JWT |
-| **BrasilAPI (CEP v2)** | `https://brasilapi.com.br/api/cep/v2/{cep}` | Autocompletar de endereço na aba Endereço (BrasilAPI), da tela Gestão de Pacientes. | Pública |
-| **BrasilAPI (Feriados)** | `https://brasilapi.com.br/api/feriados/v1/{ano}` | Aviso de feriado nacional na tela Agenda e Consultas. Ano parametrizado (suporte de 1900 a 2199). | Pública |
-| **Jitsi Meet** | `https://meet.jit.si/kallospsi-{sessaoId}-{hashSeguro}` | Videochamada criptografada na tela Sala de Teleconsulta. | WebRTC |
+Os identificadores RF-F acompanham a numeração das telas do protótipo.
 
----
+### Configurações (Tela 01)
 
-## 8. Modelo de Dados de Referência
+**Responsável:** Matheus Alves · **Rota:** `/configuracoes` · **Acesso:** autenticado, com conteúdo conforme o perfil.
 
-Modelo usado como referência para os dados exibidos e enviados pelas telas.
+Entidades: Consultório e Psicólogo. Estados: variante Administrador, variante Psicólogo, salvando e erro de validação.
 
-### 8.1 Diagrama Entidade-Relacionamento
-
-```mermaid
-erDiagram
-    CONFIGURACAO_CONSULTORIO ||--o{ PSICOLOGO : "1-N"
-    PSICOLOGO ||--o{ PACIENTE : "1-N"
-    PSICOLOGO ||--o{ SESSAO : "1-N"
-    PACIENTE ||--o{ SESSAO : "1-N"
-    PACIENTE ||--|| PRONTUARIO : "1-1 estrito"
-    SESSAO ||--o{ SESSAO_QUEIXA : "1-N"
-    QUEIXA_CLINICA ||--o{ SESSAO_QUEIXA : "1-N"
-
-    CONFIGURACAO_CONSULTORIO {
-        bigint id PK
-        varchar razao_social
-        varchar endereco
-        numeric valor_padrao_sessao
-        varchar logo_url
-    }
-
-    PSICOLOGO {
-        bigint id PK
-        bigint consultorio_id FK
-        varchar nome
-        varchar crp UK
-        varchar email UK
-        varchar senha
-        varchar telefone
-        varchar especialidade
-    }
-
-    PACIENTE {
-        bigint id PK
-        bigint psicologo_id FK
-        varchar nome
-        varchar cpf UK
-        date data_nasc
-        varchar telefone
-        varchar email
-        varchar contato_emergencia
-        varchar status
-        text observacoes_adicionais
-    }
-
-    PRONTUARIO {
-        bigint id PK
-        bigint paciente_id FK,UK
-        timestamp data_abertura
-        jsonb dados_clinicos
-    }
-
-    SESSAO {
-        bigint id PK
-        bigint psicologo_id FK
-        bigint paciente_id FK
-        timestamp data_hora
-        integer duracao_minutos
-        numeric valor
-        varchar status
-        varchar modalidade
-    }
-
-    QUEIXA_CLINICA {
-        bigint id PK
-        varchar codigo
-        varchar cid
-        varchar nome
-        text descricao
-    }
-
-    SESSAO_QUEIXA {
-        bigint sessao_id PK,FK
-        bigint queixa_id PK,FK
-    }
-```
-
-### 8.2 Entidades e relações
-
-| Entidade | Atributos e tipos de dados (PostgreSQL) | Relações |
+| ID | Requisito | Descrição |
 |---|---|---|
-| **ConfiguracaoConsultorio** | `id` BIGINT PK<br>`razao_social` VARCHAR(150)<br>`endereco` VARCHAR(255)<br>`valor_padrao_sessao` NUMERIC(10,2)<br>`logo_url` VARCHAR(500) | 1-N com Psicologo |
-| **Psicologo** | `id` BIGINT PK<br>`consultorio_id` BIGINT FK<br>`nome` VARCHAR(150)<br>`crp` VARCHAR(20) UK<br>`email` VARCHAR(150) UK<br>`senha` VARCHAR(255)<br>`telefone` VARCHAR(20)<br>`especialidade` VARCHAR(100) | N-1 com ConfiguracaoConsultorio;<br>1-N com Paciente e com Sessao |
-| **Paciente** | `id` BIGINT PK<br>`psicologo_id` BIGINT FK<br>`nome` VARCHAR(150)<br>`cpf` VARCHAR(11) UK<br>`data_nasc` DATE<br>`telefone` VARCHAR(20)<br>`email` VARCHAR(150)<br>`contato_emergencia` VARCHAR(150)<br>`status` VARCHAR(20)<br>`observacoes_adicionais` TEXT | N-1 com Psicologo;<br>1-1 com Prontuario;<br>1-N com Sessao |
-| **Prontuario** | `id` BIGINT PK<br>`paciente_id` BIGINT FK, UK<br>`data_abertura` TIMESTAMP<br>`dados_clinicos` JSONB | 1-1 estrito com Paciente |
-| **Sessao** | `id` BIGINT PK<br>`psicologo_id` BIGINT FK<br>`paciente_id` BIGINT FK<br>`data_hora` TIMESTAMP<br>`duracao_minutos` INTEGER<br>`valor` NUMERIC(10,2)<br>`status` VARCHAR(20)<br>`modalidade` VARCHAR(20) | N-1 com Psicologo e Paciente;<br>N-N com QueixaClinica |
-| **QueixaClinica** | `id` BIGINT PK<br>`codigo` VARCHAR(20)<br>`cid` VARCHAR(10)<br>`nome` VARCHAR(100)<br>`descricao` TEXT | N-N com Sessao |
-| **sessao_queixa** | `sessao_id` BIGINT PK, FK<br>`queixa_id` BIGINT PK, FK | Tabela associativa do N-N |
+| **RF-F01** | Salvar dados do consultório | O administrador edita razão social, endereço, telefone e valor padrão. Salvar mostra progresso, confirma o sucesso e atualiza o `consultorioStore`. |
+| **RF-F02** | Salvar perfil profissional | O psicólogo edita nome, CRP, telefone, e-mail e especialidade. Alterar o e-mail exige autenticação recente. Após salvar, atualiza o `authStore`. |
+| **RF-F03** | Exibir configurações conforme o perfil | Exibe apenas o bloco pertinente ao perfil e um selo Administrador ou Psicólogo. Campos do outro perfil nunca são exibidos. |
+| **RF-F04** | Alterar identidade visual | O administrador envia o logotipo com pré-visualização. A identidade é refletida nas demais telas pelo `consultorioStore`. |
 
-### 8.3 Campo JSON do prontuário
+### Painel geral (Tela 02)
 
-O prontuário guarda todos os dados clínicos em uma única coluna JSON, `dados_clinicos`, que reúne os CIDs, as observações gerais, a anamnese e as notas de TCC.
+**Responsável:** Rafael Pimentel · **Rota:** `/painel` · **Acesso:** autenticado.
 
-```json
-{
-  "cid_principal": {
-    "codigo": "F41.1",
-    "descricao": "Ansiedade generalizada"
-  },
-  "cid_secundario": {
-    "codigo": "F32.1",
-    "descricao": "Episódio depressivo moderado"
-  },
-  "observacoes_gerais": "...",
-  "anamnese": "...",
-  "notas_tcc": "..."
-}
-```
+Entidades: indicadores de Sessões, Pacientes e Prontuários do psicólogo autenticado. Estados: carregamento, dia sem atendimentos e erro.
 
-### 8.4 Resumo das cardinalidades
-
-| Tipo | Relação | Telas envolvidas |
+| ID | Requisito | Descrição |
 |---|---|---|
-| **1-1** | Paciente e Prontuario | Prontuário e CID (tela 6) |
-| **1-N** | ConfiguracaoConsultorio e Psicologo; Psicologo e Paciente | Configurações (tela 11); Gestão de Pacientes (tela 4) |
-| **1-N** | Psicologo e Sessao; Paciente e Sessao | Agenda e Consultas (tela 5); Sessões Vinculadas (4.4) da tela Gestão de Pacientes |
-| **N-N** | Sessao e QueixaClinica | Queixas e Abordagens (tela 7) |
+| **RF-F05** | Indicadores do psicólogo | Cartões de pacientes ativos, sessões no mês, atendimentos de hoje e prontuários atualizados nos últimos 7 dias, restritos ao psicólogo autenticado. |
+| **RF-F06** | Atendimentos de hoje | Tabela com horário, paciente, modalidade e status. Ver agenda leva à Agenda e consultas. |
+| **RF-F07** | Ritmo do mês | Gráfico semanal, destaque da semana de maior volume e resumo de sessões concluídas e pendentes. |
+| **RF-F08** | Atalho para a agenda | Botão Abrir agenda, trilha de navegação e data atual na barra superior. |
 
----
+### Login (Tela 03)
 
-## 9. Design System
+**Responsável:** Ruan Ricardo · **Rota:** `/login` · **Acesso:** público.
 
-A identidade visual busca um padrão clínico, sóbrio e acolhedor, inspirado em produtos como Alma e Cal.com, sem a estética genérica de interfaces geradas automaticamente. A biblioteca de componentes é de livre escolha, desde que siga esta paleta e tipografia.
+Estados: carregando, credenciais inválidas, erro de conexão e links para Redefinir senha e Criar conta.
 
-### 9.1 Paleta de cores
-
-| Nome | Hex | Amostra |
+| ID | Requisito | Descrição |
 |---|---|---|
-| **Deep Sage** | `#28382c` | Primária escura / Identidade |
-| **Clinical Green** | `#486b4f` | Destaques clínicos e ações |
-| **Deep Slate** | `#0f172a` | Textos e contrastes neutros |
-| **Soft Sage** | `#f4f7f5` | Fundos claros e cartões secundários |
-| **Warm Clay** | `#fbf9f6` | Fundo principal da aplicação |
-| **Muted Border** | `#eae6df` | Bordas e divisores suaves |
+| **RF-F09** | Autenticar usuário | Formulário de e-mail e senha com validação e progresso. Falhas não indicam qual credencial errou. No sucesso, preenche o `authStore` e abre o Painel ou a rota originalmente solicitada. |
+| **RF-F10** | Encerrar sessão | Sair encerra a sessão, limpa o `authStore` e o cache do TanStack Query e redireciona para `/login`. |
 
-### 9.2 Tipografia e ícones
+### Redefinir senha (Tela 04)
 
-| Uso | Fonte | Diretriz |
+**Responsável:** Ruan Ricardo · **Rota:** `/redefinir-senha` · **Acesso:** público.
+
+Estados: formulário de e-mail, link enviado e erro de envio.
+
+| ID | Requisito | Descrição |
 |---|---|---|
-| **Títulos (H1 a H3)** | Satoshi Bold/Black | Até 2 linhas amplas, com espaçamento nobre. |
-| **Corpo e anamnese** | General Sans | Leitura relaxada para prontuários extensos. |
-| **Códigos técnicos** | JetBrains Mono | Documentos, CPFs e códigos CID-10 (ex.: F41.1). |
-| **Ícones** | Phosphor Icons ou Lucide | Pacote `@phosphor-icons/react` (padrão). **Zero emojis na aplicação.** |
+| **RF-F11** | Solicitar link de redefinição | Valida o e-mail, mostra progresso e confirma o envio com mensagem neutra, sem revelar se o endereço existe. Voltar ao login permanece disponível. |
 
----
+### Pacientes (Tela 05)
 
-## 10. Divisão de Responsabilidades
+**Responsável:** Richard Silva · **Rotas:** `/pacientes`, `/pacientes/novo`, `/pacientes/[id]` e `/pacientes/[id]/editar` · **Acesso:** autenticado.
 
-### 10.1 Telas por integrante
+Entidade: Pacientes, com CRUD e exclusão lógica. Subtelas: perfil, novo paciente em três etapas, edição, busca vazia e confirmação de desativação.
 
-Cada tela tem um único responsável pela interface.
-
-| Membro | Telas | Requisitos |
+| ID | Requisito | Descrição |
 |---|---|---|
-| **Ruan Ricardo** | Login (1) e Esqueci Minha Senha (2) | RF-F01 a RF-F04 |
-| **Micael Barros** | Painel Geral (3) e Configurações (11) | RF-F05 a RF-F07; RF-F42 a RF-F45 |
-| **Richard Silva** | Gestão de Pacientes (4) e Agenda e Consultas (5) | RF-F08 a RF-F25 |
-| **Matheus Alves** | Prontuário e CID (6), Queixas e Abordagens (7) e Sala de Teleconsulta (8) | RF-F26 a RF-F36 |
-| **Rafael Pimentel** | Financeiro (9) e Documentos e Atestados (10) | RF-F37 a RF-F41 |
+| **RF-F12** | Buscar e filtrar pacientes | Busca por nome ou CPF, filtro por status e contador. Sem resultado, oferece limpar filtros. |
+| **RF-F13** | Listar pacientes | Tabela paginada com paciente, CPF mascarado, contato, última sessão, status, intervalo e ação Ver perfil. |
+| **RF-F14** | Visualizar perfil e sessões | Exibe dados e histórico de sessões, com atalhos para Agenda e Prontuário. |
+| **RF-F15** | Cadastrar e editar paciente | Formulário em três etapas com progresso, validação e preservação dos dados ao voltar. A edição reutiliza o formulário. Salvar confirma e invalida a lista. |
+| **RF-F16** | Desativar e reativar paciente | Exclusão lógica com confirmação. O paciente fica Inativo, mantém registros clínicos e pode ser reativado. |
+| **RF-F17** | Restringir a lista ao psicólogo | Exibe apenas pacientes sob responsabilidade do psicólogo autenticado ou vinculados a ele. |
+| **RF-F18** | Validar CPF | Valida formato e dígitos, aplica máscara e informa duplicidade no próprio campo. |
+| **RF-F19** | Proteger dados pessoais | O CPF fica mascarado na lista e completo apenas no perfil e na edição. |
 
-*Observação: Rafael Pimentel fica responsável exclusivamente por tarefas de front-end.*
+### Prontuário e CID (Tela 06)
 
-### 10.2 Regras de trabalho
-- **Uma tela, um responsável**: evita conflitos de merge, divergências de CSS e perda de rastreabilidade no GitHub.
-- O histórico de commits deve refletir esta divisão, com participação individual comprovada.
+**Responsável:** Micael Barros · **Rotas:** `/prontuario` e `/prontuario/[pacienteId]` · **Acesso:** psicólogos vinculados ao paciente.
 
----
+Entidades: Prontuários e Evoluções. Estados: sem paciente, prontuário, busca de CID, acesso negado, carregando e erro.
 
-## 11. Critérios de Entrega e Aceite
-
-### 11.1 Roteiro do vídeo de demonstração (3 minutos)
-
-| Tempo | Bloco | Conteúdo a demonstrar |
+| ID | Requisito | Descrição |
 |---|---|---|
-| **0:00 a 0:40** | Visão geral e autenticação | Login (tela 1), sessão do psicólogo mantida no Zustand e navegação rápida pelas telas da equipe: Painel Geral, Gestão de Pacientes, Agenda e Consultas, Prontuário e CID, Queixas e Abordagens. |
-| **0:41 a 2:10** | CRUD e persistência | Cadastrar paciente na tela Gestão de Pacientes, preencher o CEP puxando pela BrasilAPI, mostrar o registro no Swagger UI ou PostgreSQL, editar um dado e excluir. |
-| **2:11 a 3:00** | Prontuário, CIDs e feriados | Relação 1-1 na tela Prontuário e CID, com CID principal e secundário, e por fim o aviso de feriado da BrasilAPI na tela Agenda e Consultas. |
+| **RF-F20** | Selecionar paciente | Seletor de pacientes vinculados. A escolha atualiza a rota e carrega o prontuário. |
+| **RF-F21** | Buscar CID | Busca por código ou descrição e permite associar o resultado ao registro clínico. |
+| **RF-F22** | Editar registro clínico | Edita anamnese, observações e CID, com salvamento e confirmação. |
+| **RF-F23** | Registrar evolução clínica | Cria evolução vinculada a uma sessão concluída e a inclui no histórico. |
+| **RF-F24** | Consultar histórico de evoluções | Lista cronológica somente para leitura. Evoluções não podem ser editadas nem excluídas. |
+| **RF-F25** | Tratar acesso negado | Não exibe dados clínicos e oferece retorno à seleção do paciente. |
 
-### 11.2 Regras de envio e penalidades
-- O vídeo deve ser publicado no YouTube como **Não Listado**; vídeo privado acarreta penalidade de 1,0 ponto.
-- Os 5 integrantes devem postar individualmente o link no Teams; o não cumprimento acarreta penalidade de 1,0 ponto.
-- O histórico do GitHub deve refletir a divisão de responsabilidades do capítulo 10.
+### Agenda e consultas (Tela 07)
 
-### 11.3 Priorização por ciclo
+**Responsável:** Richard Silva · **Rota:** `/agenda` · **Acesso:** autenticado.
 
-| Ciclo | Telas e conteúdo |
-|---|---|
-| **Ciclo 1 (MVP)** | Login e Esqueci Minha Senha, Gestão de Pacientes, Agenda e Consultas e Prontuário e CID, mais o catálogo de queixas, que a Agenda e o N-N exigem. |
-| **Ciclo 2** | Painel Geral, Sala de Teleconsulta, Financeiro, Documentos e Atestados e Configurações, refinadas na segunda metade do cronograma. |
+Entidade: Sessões, com CRUD. Estados: agendar, editar e pagar, confirmar cancelamento, agenda vazia, feriado e conflito.
 
----
+| ID | Requisito | Descrição |
+|---|---|---|
+| **RF-F26** | Agendar sessão | Informa paciente vinculado, data, horário, modalidade e valor sugerido pelo consultório. Salvar atualiza a agenda. |
+| **RF-F27** | Editar, remarcar e cancelar | Edita dados, remarca e registra pagamento. Cancelar exige confirmação e mantém o registro como cancelado. |
+| **RF-F28** | Visualizar agenda semanal | Grade de segunda a sexta com cartões, intervalo, número da semana, navegação e botão Hoje. |
+| **RF-F29** | Agenda sem resultados | Oferece agendar uma sessão ou limpar os filtros. |
+| **RF-F30** | Filtrar a agenda | Filtros combináveis por paciente e status. |
+| **RF-F31** | Impedir conflito de horário | Bloqueia horário já ocupado pelo mesmo psicólogo e informa o conflito no formulário. |
+| **RF-F32** | Concluir consulta | A conclusão habilita o registro de evolução em Prontuário e CID. |
+| **RF-F38** | Aviso de feriado | Exibe aviso informativo quando a data escolhida coincide com feriado. |
 
-## 12. Matriz de Rastreabilidade
+### Criar conta (Tela 08)
 
-| Tela | Nome | Requisitos | Responsável | Integração externa |
-|---|---|---|---|---|
-| **1** | Login | RF-F01, F02, F04 | Ruan Ricardo | Nenhuma |
-| **2** | Esqueci Minha Senha | RF-F03 | Ruan Ricardo | Nenhuma |
-| **3** | Painel Geral | RF-F05 a F07 | Micael Barros | Nenhuma |
-| **4** | Gestão de Pacientes | RF-F08 a F18 | Richard Silva | BrasilAPI (CEP) |
-| **5** | Agenda e Consultas | RF-F19 a F25 | Richard Silva | BrasilAPI (feriados) |
-| **6** | Prontuário e CID | RF-F26 a F31 | Matheus Alves | Nenhuma |
-| **7** | Queixas e Abordagens | RF-F32 a F34 | Matheus Alves | Nenhuma |
-| **8** | Sala de Teleconsulta | RF-F35, F36 | Matheus Alves | Jitsi Meet |
-| **9** | Financeiro | RF-F37 a F39 | Rafael Pimentel | Nenhuma |
-| **10** | Documentos e Atestados | RF-F40, F41 | Rafael Pimentel | Nenhuma |
-| **11** | Configurações | RF-F42 a F45 | Micael Barros | Nenhuma |
+**Responsável:** Ruan Ricardo · **Rota:** `/criar-conta` · **Acesso:** público.
 
----
+Entidade: Psicólogo. Estados: formulário, erros por campo, duplicidade de CRP ou e-mail, carregando e sucesso.
 
-## 13. Diretrizes Técnicas do Frontend
+| ID | Requisito | Descrição |
+|---|---|---|
+| **RF-F39** | Cadastrar psicólogo | Formulário com nome, CRP, e-mail e senha, com progresso no botão Criar conta. |
+| **RF-F40** | Validar campos | Valida CRP, e-mail e senha com no mínimo 8 caracteres e mostra mensagens junto aos campos. |
+| **RF-F41** | Tratar duplicidade | Mostra duplicidade de CRP ou e-mail no campo afetado. |
+| **RF-F42** | Concluir cadastro | Confirma o sucesso e leva o usuário a `/login`. |
 
-Orientações que valem para todas as telas. Não são requisitos funcionais e, por isso, não têm ID nem responsável atribuído.
+## 6. Requisitos não funcionais de front-end
 
-### 13.1 Cliente HTTP e estado
-Toda chamada à API passa por um cliente central que envia o JWT guardado no Zustand no cabeçalho `Authorization: Bearer`. O TanStack Query cuida do cache e da atualização dos dados.
-
-> **Legenda técnica do banco/API:**  
-> PK = chave primária; FK = chave estrangeira; UK = valor único. Os tipos seguem o PostgreSQL e podem ser ajustados pelo backend: valores monetários usam `NUMERIC(10,2)` para evitar erros de arredondamento, datas com hora usam `TIMESTAMP` e o campo `dados_clinicos` usa `JSONB`.
-
-### 13.2 Estados de carregamento e erro
-As telas tratam carregamento, lista vazia e erros da API (`400`, `401`, `403`, `404` e `409`) com mensagens claras ao usuário.
-
+| ID | Requisito | Descrição |
+|---|---|---|
+| **RNF-F01** | Responsividade | Interface utilizável de 360 px a telas largas; menu recolhível e tabelas com rolagem em telas estreitas. |
+| **RNF-F02** | Desempenho percebido | Esqueletos, cache e atualização somente dos dados afetados após mutações. |
+| **RNF-F03** | Acessibilidade | Contraste, rótulos, foco visível, teclado e erros associados aos campos. |
+| **RNF-F04** | Consistência visual | Uso exclusivo dos tokens da seção 4.5. |
+| **RNF-F05** | Proteção de dados | Dados clínicos e pessoais não ficam no `localStorage` nem no estado persistido; CPF mascarado e rotas protegidas. |
+| **RNF-F06** | Feedback ao usuário | Toda ação confirma o resultado ou informa o erro em linguagem clara. |
+| **RNF-F07** | Compatibilidade | Versões atuais de Chrome, Edge, Firefox e Safari. |
