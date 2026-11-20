@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
@@ -6,7 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeSlash, Lock, EnvelopeSimple } from "@phosphor-icons/react";
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
 const rotaAnterior = searchParams.get("next");
   const router = useRouter();
@@ -167,5 +168,13 @@ function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
