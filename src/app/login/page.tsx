@@ -1,15 +1,28 @@
 "use client";
+import { useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeSlash, Lock, EnvelopeSimple } from "@phosphor-icons/react";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+const rotaAnterior = searchParams.get("next");
+  const router = useRouter();
+const login = useAuthStore((state) => state.login);
+
+
     const [senhaVisivel, setSenhaVisivel] = useState(false);
     const [email, setEmail] = useState("");
 const [senha, setSenha] = useState("");
 const [erro, setErro] = useState("");
+const [carregando, setCarregando] = useState(false);
 function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault();
+
+  setErro("");
+
   if (!email.trim() || !senha.trim()) {
     setErro("Preencha todos os campos.");
     return;
@@ -20,8 +33,23 @@ function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     return;
   }
 
-  setErro("");
-  alert("Dados preenchidos corretamente!");
+  setCarregando(true);
+
+  setTimeout(() => {
+    if (email === "teste@kallospsi.com" && senha === "123456") {
+  login(email);
+
+  document.cookie = "kallos-auth=true; Path=/; SameSite=Lax";
+
+  const destino = rotaAnterior || "/dashboard";
+
+  router.push(destino);
+} else {
+      setErro("E-mail ou senha incorretos.");
+    }
+
+    setCarregando(false);
+  }, 1500);
 }
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#f4f7f5] px-4 py-10">
@@ -114,10 +142,11 @@ function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 
           <button
             type="submit"
+            disabled={carregando}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#28382c] py-3.5 font-semibold text-white transition hover:bg-[#486b4f]"
           >
-            Entrar
-            <ArrowRight size={20} />
+            {carregando ? "Entrando..." : "Entrar"}
+{!carregando && <ArrowRight size={20} />}
           </button>
         </form>
 
