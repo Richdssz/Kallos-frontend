@@ -2,33 +2,38 @@
 
 @theme {
   /* ========================================================
-     PALETA DE CORES OFICIAL - DESIGN SYSTEM KALLOS PSI
-     Nomes oficiais e nomes confortáveis em Português (PT-BR)
+     PALETA DE CORES OFICIAL - DESIGN SYSTEM KALLOS PSI (v1.0)
      ======================================================== */
 
-  /* 1. Primária Escura / Identidade */
-  --color-verde-escuro: #28382c;      /* Deep Sage */
-  --color-deep-sage: #28382c;
+  /* 1. Primária / Menu Lateral, Botões Primários e Cabeçalhos */
+  --color-verde-kallos: #334936;
+  --color-verde-clinico: #334936;
+  --color-clinical-green: #334936;
 
-  /* 2. Destaques Clínicos / Botões de Ação Principal */
-  --color-verde-clinico: #486b4f;     /* Clinical Green */
-  --color-clinical-green: #486b4f;
+  /* 2. Títulos e Destaques */
+  --color-verde-profundo: #1D2C20;
+  --color-verde-escuro: #1D2C20;
+  --color-deep-sage: #1D2C20;
+  --color-cinza-ardosia: #1D2C20;
+  --color-deep-slate: #1D2C20;
 
-  /* 3. Textos Principais / Títulos e Contrastes */
-  --color-cinza-ardosia: #0f172a;     /* Deep Slate */
-  --color-deep-slate: #0f172a;
+  /* 3. Acentos, Gráficos e Detalhes */
+  --color-verde-salvia: #ACBFA9;
 
-  /* 4. Fundos Suaves / Cards Secundários / Badges */
-  --color-verde-suave: #f4f7f5;       /* Soft Sage */
-  --color-soft-sage: #f4f7f5;
+  /* 4. Bordas, Selos e Fundos de Apoio */
+  --color-salvia-claro: #E6ECE2;
+  --color-verde-suave: #E6ECE2;
+  --color-soft-sage: #E6ECE2;
+  --color-borda-suave: #E6ECE2;
+  --color-muted-border: #E6ECE2;
 
-  /* 5. Fundo Principal Acolhedor da Aplicação */
-  --color-fundo-acolhedor: #fbf9f6;   /* Warm Clay */
-  --color-warm-clay: #fbf9f6;
+  /* 5. Fundo das Páginas */
+  --color-creme: #FAF6F2;
+  --color-fundo-acolhedor: #FAF6F2;
+  --color-warm-clay: #FAF6F2;
 
-  /* 6. Bordas Sutis / Divisores e Inputs */
-  --color-borda-suave: #eae6df;       /* Muted Border */
-  --color-muted-border: #eae6df;
+  /* 6. Textos Secundários e Legendas */
+  --color-verde-acinzentado: #7F8F7A;
 
   /* ========================================================
      TIPOGRAFIA OFICIAL
@@ -39,8 +44,8 @@
 }
 
 :root {
-  --background: var(--color-fundo-acolhedor);
-  --foreground: var(--color-cinza-ardosia);
+  --background: var(--color-creme);
+  --foreground: var(--color-verde-profundo);
 }
 
 body {
