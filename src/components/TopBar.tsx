@@ -1,6 +1,25 @@
+"use client";
+
+import { usePathname } from 'next/navigation';
 import { Calendar, ChevronRight, Menu } from 'lucide-react';
-import { useAuthStore } from '@/features/painel/stores/authStore';
-import { useUIStore } from '@/features/painel/stores/uiStore';
+import { useAuthStore } from '@/store/painel/authStore';
+import { useUIStore } from '@/store/painel/uiStore';
+
+function obterTituloRota(pathname: string): { secao: string; titulo: string } {
+  if (pathname.startsWith('/pacientes')) {
+    return { secao: 'Consultório', titulo: 'Pacientes' };
+  }
+  if (pathname.startsWith('/agenda')) {
+    return { secao: 'Consultório', titulo: 'Agenda e consultas' };
+  }
+  if (pathname.startsWith('/prontuario')) {
+    return { secao: 'Consultório', titulo: 'Prontuário e CID' };
+  }
+  if (pathname.startsWith('/configuracoes')) {
+    return { secao: 'Administração', titulo: 'Configurações' };
+  }
+  return { secao: 'Consultório', titulo: 'Painel geral' };
+}
 
 function formatarDataAtual(): string {
   const agora = new Date();
@@ -24,11 +43,13 @@ function obterIniciais(nome: string): string {
 }
 
 export function TopBar() {
+  const pathname = usePathname() || '/painel';
   const usuario = useAuthStore((s) => s.usuario);
   const setMenuMobileAberto = useUIStore((s) => s.setMenuMobileAberto);
 
   const dataAtual = formatarDataAtual();
   const iniciais = usuario ? obterIniciais(usuario.nome) : 'RP';
+  const { secao, titulo } = obterTituloRota(pathname);
 
   return (
     <header className="sticky top-0 z-30 border-b border-[#E6ECE2] bg-[#FAF6F2]/95 backdrop-blur-xs">
@@ -44,14 +65,14 @@ export function TopBar() {
           </button>
 
           <nav aria-label="Trilha de navegação" className="flex min-w-0 items-center gap-1.5 text-sm">
-            <span className="hidden text-[#556650] sm:inline">Consultório</span>
+            <span className="hidden text-[#556650] sm:inline">{secao}</span>
             <ChevronRight
               className="hidden h-4 w-4 shrink-0 text-[#7F8F7A] sm:inline"
               strokeWidth={1.75}
               aria-hidden="true"
             />
             <span className="truncate font-medium text-[#1D2C20]">
-              Painel geral
+              {titulo}
             </span>
           </nav>
         </div>

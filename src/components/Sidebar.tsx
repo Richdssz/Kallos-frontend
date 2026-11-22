@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from 'react';
 import {
   CalendarDays,
@@ -10,10 +12,10 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useAuthStore } from '@/features/painel/stores/authStore';
-import { useConsultorioStore } from '@/features/painel/stores/consultorioStore';
-import { useUIStore } from '@/features/painel/stores/uiStore';
-import type { RotaNavegacao } from '@/features/painel/types/painel';
+import { useAuthStore } from '@/store/painel/authStore';
+import { useConsultorioStore } from '@/store/painel/consultorioStore';
+import { useUIStore } from '@/store/painel/uiStore';
+import type { RotaNavegacao } from '@/types/painel/painel';
 import { KallosLogo } from './KallosLogo';
 
 interface SidebarProps {
