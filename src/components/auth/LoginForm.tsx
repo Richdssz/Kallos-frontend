@@ -10,7 +10,7 @@ import {
   Lock,
   EnvelopeSimple,
 } from "@phosphor-icons/react";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "@/store/auth/authStore";
 
 function LoginContent() {
   const searchParams = useSearchParams();
