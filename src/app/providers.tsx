@@ -1,8 +1,8 @@
-
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { ToastNotificacao } from "@/components/ToastNotificacao";
 
 export default function Providers({
   children,
@@ -24,6 +24,7 @@ export default function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <ToastNotificacao />
     </QueryClientProvider>
   );
 }
