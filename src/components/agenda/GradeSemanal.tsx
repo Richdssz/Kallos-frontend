@@ -45,7 +45,6 @@ export function GradeSemanal({
     }
   }, [diasSemana, diaMobileSelecionado, diaPadraoMobile]);
 
-  // Garante que horários fora da grade padrão (ex.: 07:30 ou 20:00 vindos da API) também sejam exibidos.
   const faixasHorarias = useMemo(() => {
     const conjunto = new Set<string>(HORARIOS_GRADE_PADRAO);
     sessoes.forEach((s) => {
@@ -56,7 +55,6 @@ export function GradeSemanal({
     return Array.from(conjunto).sort((a, b) => a.localeCompare(b));
   }, [sessoes]);
 
-  // Agrupa sessões por (data + faixaHora) para renderização O(1) na grade desktop.
   const sessoesPorCelula = useMemo(() => {
     const mapa = new Map<string, SessaoResponseDTO[]>();
     sessoes.forEach((sessao) => {
@@ -68,7 +66,6 @@ export function GradeSemanal({
     return mapa;
   }, [sessoes]);
 
-  // Contagem e lista por dia (usada no mobile >= 360px).
   const sessoesPorDia = useMemo(() => {
     const mapa = new Map<string, SessaoResponseDTO[]>();
     diasSemana.forEach((d) => mapa.set(d.iso, []));
@@ -84,15 +81,15 @@ export function GradeSemanal({
       <section
         aria-label="Carregando agenda semanal"
         aria-busy="true"
-        className="overflow-hidden rounded-2xl border border-[#E6ECE2] bg-white"
+        className="overflow-hidden rounded-xl border border-[#E6ECE2] bg-white"
       >
         <div className="hidden lg:block">
           <div className="grid grid-cols-[72px_repeat(5,minmax(0,1fr))] border-b border-[#E6ECE2] bg-[#FAF6F2]">
             <div className="p-3" />
             {[0, 1, 2, 3, 4].map((i) => (
-              <div key={i} className="border-l border-[#E6ECE2] p-3">
-                <div className="h-3.5 w-16 animate-pulse rounded bg-[#E6ECE2]" />
-                <div className="mt-1.5 h-4 w-20 animate-pulse rounded bg-[#E6ECE2]/80" />
+              <div key={i} className="border-l border-[#E6ECE2] p-3.5">
+                <div className="h-3 w-14 animate-pulse rounded bg-[#E6ECE2]" />
+                <div className="mt-2 h-4 w-20 animate-pulse rounded bg-[#E6ECE2]/80" />
               </div>
             ))}
           </div>
@@ -107,10 +104,10 @@ export function GradeSemanal({
               {[0, 1, 2, 3, 4].map((col) => (
                 <div
                   key={col}
-                  className="min-h-[82px] border-l border-[#E6ECE2] p-2"
+                  className="min-h-[84px] border-l border-[#E6ECE2] p-2"
                 >
                   {(row + col) % 3 === 0 && (
-                    <div className="h-16 animate-pulse rounded-xl bg-[#E6ECE2]/60" />
+                    <div className="h-16 animate-pulse rounded-xl bg-[#E6ECE2]/55" />
                   )}
                 </div>
               ))}
@@ -130,7 +127,7 @@ export function GradeSemanal({
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-24 animate-pulse rounded-xl bg-[#E6ECE2]/60"
+              className="h-24 animate-pulse rounded-xl bg-[#E6ECE2]/55"
             />
           ))}
         </div>
@@ -150,12 +147,12 @@ export function GradeSemanal({
   return (
     <section
       aria-label="Grade semanal de consultas"
-      className="overflow-hidden rounded-2xl border border-[#E6ECE2] bg-white shadow-xs"
+      className="rounded-xl border border-[#E6ECE2] bg-white"
     >
-      {/* VISUALIZAÇÃO DESKTOP (Segunda a Sexta por faixas horárias) */}
+      {/* DESKTOP: Matriz semanal Segunda a Sexta com cabeçalho sticky */}
       <div className="hidden lg:block">
-        <div className="grid grid-cols-[76px_repeat(5,minmax(0,1fr))] border-b border-[#E6ECE2] bg-[#FAF6F2]">
-          <div className="flex items-center justify-center p-3 text-[11px] font-semibold tracking-wider text-[#556650] uppercase">
+        <div className="sticky top-16 z-20 grid grid-cols-[72px_repeat(5,minmax(0,1fr))] rounded-t-xl border-b border-[#E6ECE2] bg-[#FAF6F2]/95 backdrop-blur-xs">
+          <div className="flex items-center justify-center p-3 text-[11px] font-semibold tracking-wider text-[#7F8F7A] uppercase">
             Hora
           </div>
           {diasSemana.map((dia) => {
@@ -165,31 +162,38 @@ export function GradeSemanal({
             return (
               <div
                 key={dia.iso}
-                className={`border-l border-[#E6ECE2] px-3 py-3 ${
-                  dia.ehHoje ? "bg-[#E6ECE2]/65" : ""
+                className={`border-l border-[#E6ECE2] px-3.5 py-3 transition-colors ${
+                  dia.ehHoje
+                    ? "border-t-2 border-t-[#334936] bg-[#E6ECE2]/55"
+                    : "border-t-2 border-t-transparent"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p
-                      className={`text-xs font-semibold uppercase tracking-wide ${
-                        dia.ehHoje ? "text-[#334936]" : "text-[#556650]"
-                      }`}
-                    >
-                      {dia.diaSemanaCurto}
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`text-[11px] font-semibold tracking-wider uppercase ${
+                          dia.ehHoje ? "text-[#334936]" : "text-[#556650]"
+                        }`}
+                      >
+                        {dia.diaSemanaCurto}
+                      </span>
                       {dia.ehHoje && (
-                        <span className="ml-1.5 rounded bg-[#334936] px-1.5 py-0.5 text-[10px] font-medium text-[#FAF6F2] normal-case">
+                        <span className="rounded bg-[#334936] px-1.5 py-0.5 text-[10px] font-medium text-[#FAF6F2]">
                           Hoje
                         </span>
                       )}
-                    </p>
+                    </div>
                     <p className="mt-0.5 font-mono text-sm font-semibold text-[#1D2C20] tabular-nums">
                       {String(dia.diaNumero).padStart(2, "0")} {dia.mesCurto}
                     </p>
                   </div>
 
                   {qtdDia > 0 && (
-                    <span className="rounded-md bg-white px-2 py-0.5 font-mono text-[11px] font-medium text-[#556650] border border-[#E6ECE2] tabular-nums">
+                    <span
+                      className="rounded-md border border-[#E6ECE2] bg-white px-2 py-0.5 font-mono text-[11px] font-medium text-[#334936] tabular-nums"
+                      title={`${qtdDia} ${qtdDia === 1 ? "consulta" : "consultas"}`}
+                    >
                       {qtdDia}
                     </span>
                   )}
@@ -200,7 +204,10 @@ export function GradeSemanal({
                     className="mt-2 flex items-center gap-1 truncate rounded-md border border-amber-300/70 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-900"
                     title={`Feriado: ${feriado.name}`}
                   >
-                    <Calendar className="h-3 w-3 shrink-0 text-amber-700" aria-hidden="true" />
+                    <Calendar
+                      className="h-3 w-3 shrink-0 text-amber-700"
+                      aria-hidden="true"
+                    />
                     <span className="truncate">{feriado.name}</span>
                   </div>
                 )}
@@ -209,14 +216,14 @@ export function GradeSemanal({
           })}
         </div>
 
-        <div className="divide-y divide-[#E6ECE2]">
+        <div className="divide-y divide-[#E6ECE2]/80">
           {faixasHorarias.map((faixa) => (
             <div
               key={faixa}
-              className="grid grid-cols-[76px_repeat(5,minmax(0,1fr))]"
+              className="grid grid-cols-[72px_repeat(5,minmax(0,1fr))]"
             >
-              <div className="flex items-start justify-center bg-[#FAF6F2]/40 px-2 py-3">
-                <span className="font-mono text-xs font-medium text-[#556650] tabular-nums">
+              <div className="flex items-start justify-center bg-[#FAF6F2]/40 px-2 pt-3">
+                <span className="font-mono text-xs font-medium text-[#7F8F7A] tabular-nums">
                   {faixa}
                 </span>
               </div>
@@ -228,8 +235,8 @@ export function GradeSemanal({
                 return (
                   <div
                     key={chave}
-                    className={`group/cell relative min-h-[78px] border-l border-[#E6ECE2] p-2 transition-colors ${
-                      dia.ehHoje ? "bg-[#E6ECE2]/20" : "bg-white"
+                    className={`min-h-[82px] border-l border-[#E6ECE2]/80 p-2 transition-colors ${
+                      dia.ehHoje ? "bg-[#E6ECE2]/18" : "bg-white"
                     }`}
                   >
                     {celulaSessoes.length > 0 ? (
@@ -248,10 +255,10 @@ export function GradeSemanal({
                         type="button"
                         onClick={() => onAgendarNoHorario(dia.iso, faixa)}
                         aria-label={`Agendar sessão em ${dia.diaSemanaLongo}, dia ${dia.diaNumero}, às ${faixa}`}
-                        className="flex h-full min-h-[60px] w-full items-center justify-center rounded-lg border border-transparent text-xs text-transparent transition-colors hover:border-dashed hover:border-[#ACBFA9] hover:bg-[#FAF6F2] hover:text-[#556650] focus-visible:border-dashed focus-visible:border-[#334936] focus-visible:bg-[#FAF6F2] focus-visible:text-[#334936] focus-visible:outline-none"
+                        className="flex h-full min-h-[64px] w-full items-center justify-center rounded-xl border border-transparent text-xs font-medium text-transparent transition-all duration-150 hover:border-dashed hover:border-[#ACBFA9] hover:bg-[#FAF6F2] hover:text-[#334936] active:scale-[0.99] motion-reduce:transform-none focus-visible:border-dashed focus-visible:border-[#334936] focus-visible:bg-[#FAF6F2] focus-visible:text-[#334936] focus-visible:outline-none"
                       >
                         <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-                        <span>Agendar</span>
+                        <span className="font-mono tabular-nums">{faixa}</span>
                       </button>
                     )}
                   </div>
@@ -262,7 +269,7 @@ export function GradeSemanal({
         </div>
       </div>
 
-      {/* VISUALIZAÇÃO MOBILE / TABLET (utilizável a partir de 360px) */}
+      {/* MOBILE / TABLET (360px+) */}
       <div className="p-3 sm:p-4 lg:hidden">
         <div
           role="tablist"
@@ -281,15 +288,15 @@ export function GradeSemanal({
                 role="tab"
                 aria-selected={selecionado}
                 onClick={() => setDiaMobileSelecionado(dia.iso)}
-                className={`relative flex flex-col items-center rounded-xl border px-1.5 py-2 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936] ${
+                className={`relative flex flex-col items-center rounded-xl border px-1.5 py-2.5 text-center transition-all duration-150 active:scale-[0.97] motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936] ${
                   selecionado
                     ? "border-[#334936] bg-[#334936] text-[#FAF6F2]"
                     : dia.ehHoje
-                      ? "border-[#ACBFA9] bg-[#E6ECE2]/60 text-[#1D2C20]"
+                      ? "border-[#ACBFA9] bg-[#E6ECE2]/65 text-[#1D2C20]"
                       : "border-[#E6ECE2] bg-[#FAF6F2] text-[#556650] hover:border-[#ACBFA9]"
                 }`}
               >
-                <span className="text-[11px] font-medium uppercase">
+                <span className="text-[11px] font-semibold uppercase">
                   {dia.diaSemanaCurto}
                 </span>
                 <span className="mt-0.5 font-mono text-sm font-semibold tabular-nums">
@@ -298,7 +305,7 @@ export function GradeSemanal({
                 <div className="mt-1 flex items-center gap-1">
                   {qtd > 0 && (
                     <span
-                      className={`rounded-full px-1.5 text-[10px] font-mono tabular-nums ${
+                      className={`rounded-full px-1.5 font-mono text-[10px] tabular-nums ${
                         selecionado
                           ? "bg-[#FAF6F2]/20 text-[#FAF6F2]"
                           : "bg-[#E6ECE2] text-[#1D2C20]"
@@ -321,7 +328,7 @@ export function GradeSemanal({
 
         {diaMobileObj && (
           <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 border-b border-[#E6ECE2] pb-3">
               <div>
                 <h3 className="text-sm font-semibold text-[#1D2C20]">
                   {diaMobileObj.diaSemanaLongo},{" "}
@@ -338,7 +345,7 @@ export function GradeSemanal({
               <button
                 type="button"
                 onClick={() => onAgendarNoHorario(diaMobileObj.iso, "09:00")}
-                className="inline-flex items-center gap-1 rounded-lg border border-[#E6ECE2] bg-[#FAF6F2] px-2.5 py-1.5 text-xs font-medium text-[#334936] hover:bg-[#E6ECE2]/60"
+                className="inline-flex items-center gap-1 rounded-lg border border-[#E6ECE2] bg-[#FAF6F2] px-3 py-1.5 text-xs font-semibold text-[#334936] transition-all duration-150 hover:border-[#ACBFA9] hover:bg-[#E6ECE2]/60 active:scale-[0.98]"
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Agendar</span>
@@ -346,12 +353,12 @@ export function GradeSemanal({
             </div>
 
             {sessoesDiaMobile.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-[#E6ECE2] bg-[#FAF6F2]/50 px-4 py-8 text-center">
-                <p className="text-sm font-medium text-[#1D2C20]">
-                  Nenhuma consulta neste dia
+              <div className="rounded-xl border border-dashed border-[#E6ECE2] bg-[#FAF6F2]/60 px-4 py-8 text-center">
+                <p className="text-sm font-semibold text-[#1D2C20]">
+                  Horários livres neste dia
                 </p>
                 <p className="mt-1 text-xs text-[#556650]">
-                  Toque em &quot;Agendar&quot; para adicionar um atendimento em{" "}
+                  Selecione &quot;Agendar&quot; para marcar um atendimento em{" "}
                   {diaMobileObj.diaSemanaLongo.toLowerCase()}.
                 </p>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   CalendarDays,
@@ -40,6 +41,7 @@ function formatarHoraAtualizacao(timestamp: number): string {
 }
 
 export function PainelGeralPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const usuario = useAuthStore((s) => s.usuario);
   const perfil = useAuthStore((s) => s.perfil);
@@ -161,7 +163,7 @@ export function PainelGeralPage() {
   };
 
   const lidarAbrirAgenda = () => {
-    setRotaModal({ rota: '/agenda', titulo: 'Agenda e consultas' });
+    router.push('/agenda');
   };
 
   const lidarAbrirProntuario = (pacienteId: string, pacienteNome: string) => {

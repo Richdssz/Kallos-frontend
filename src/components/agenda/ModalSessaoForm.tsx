@@ -788,7 +788,7 @@ export function ModalSessaoForm({
                 type="submit"
                 form="form-sessao-agenda"
                 disabled={processando || pacientesDisponiveis.length === 0}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#334936] px-4 py-2 text-sm font-medium text-[#FAF6F2] transition-colors hover:bg-[#1D2C20] disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#334936] px-4 py-2 text-sm font-medium text-[#FAF6F2] transition-all duration-150 ease-out hover:-translate-y-[1px] hover:bg-[#1D2C20] active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936]"
               >
                 {(agendarMutation.isPending || atualizarMutation.isPending) && (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

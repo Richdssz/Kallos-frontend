@@ -16,6 +16,12 @@ const PSICOLOGO_MOCK_ID = "psi-001";
 // Nunca persistida em localStorage (proteção de dados clínicos).
 const bancoSessoesMock: SessaoResponseDTO[] = criarSessoesIniciaisMock();
 
+// Snapshot somente leitura compartilhado com o Painel Geral para manter
+// Agenda e Painel 100% alinhados em modo mock.
+export function obterSnapshotSessoesMock(): SessaoResponseDTO[] {
+  return structuredClone(ordenarSessoes(bancoSessoesMock));
+}
+
 function ordenarSessoes(lista: SessaoResponseDTO[]): SessaoResponseDTO[] {
   return [...lista].sort((a, b) => {
     const compData = a.data.localeCompare(b.data);

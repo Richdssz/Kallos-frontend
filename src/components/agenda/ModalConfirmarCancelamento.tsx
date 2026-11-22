@@ -113,7 +113,7 @@ export function ModalConfirmarCancelamento({
             type="button"
             disabled={carregando}
             onClick={onConfirmar}
-            className="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-800 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white transition-all duration-150 ease-out hover:-translate-y-[1px] hover:bg-red-800 active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
           >
             {carregando && (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
