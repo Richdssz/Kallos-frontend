@@ -12,6 +12,7 @@ import {
   Users,
   AlertCircle,
   Eye,
+  Edit3,
 } from "lucide-react";
 
 const ITENS_POR_PAGINA = 5;
@@ -227,13 +228,22 @@ export function ListagemPacientes() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/pacientes/${paciente.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-salvia-claro bg-white px-3 py-1.5 text-xs font-medium text-verde-kallos hover:bg-salvia-claro/60 transition-colors"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          Ver perfil
-                        </Link>
+                        <div className="inline-flex items-center justify-end gap-2">
+                          <Link
+                            href={`/pacientes/${paciente.id}`}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-salvia-claro bg-white px-3 py-1.5 text-xs font-medium text-verde-kallos hover:bg-salvia-claro/60 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Ver perfil
+                          </Link>
+                          <Link
+                            href={`/pacientes/${paciente.id}/editar`}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-salvia-claro bg-white px-3 py-1.5 text-xs font-medium text-verde-profundo hover:bg-creme transition-colors"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                            Editar
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -15,7 +15,6 @@ import {
   AlertTriangle,
   Calendar,
   CreditCard,
-  Edit3,
   FileText,
   Mail,
   MapPin,
@@ -117,22 +116,13 @@ export default function PerfilPacientePage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                <Link
-                  href={`/pacientes/${paciente.id}/editar`}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-salvia-claro bg-white px-3 py-1.5 text-xs font-medium text-verde-profundo hover:bg-salvia-claro/40 transition-colors"
-                >
-                  <Edit3 className="h-3.5 w-3.5" />
-                  Editar
-                </Link>
-                <Link
-                  href="/pacientes"
-                  aria-label="Fechar perfil"
-                  className="rounded-lg p-1.5 text-verde-acinzentado hover:bg-salvia-claro/60 hover:text-verde-profundo transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </Link>
-              </div>
+              <Link
+                href="/pacientes"
+                aria-label="Fechar perfil"
+                className="rounded-lg p-1.5 text-verde-acinzentado hover:bg-salvia-claro/60 hover:text-verde-profundo transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </Link>
             </div>
 
             {/* Conteúdo rolável */}

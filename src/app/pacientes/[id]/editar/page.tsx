@@ -15,7 +15,7 @@ export default function EditarPacientePage() {
   return (
     <div
       className="fixed inset-0 z-40 flex items-center justify-center bg-verde-profundo/35 p-4 backdrop-blur-[2px]"
-      onClick={() => router.push(`/pacientes/${id}`)}
+      onClick={() => router.push("/pacientes")}
     >
       <div
         className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-salvia-claro bg-white shadow-2xl"
@@ -55,7 +55,7 @@ export default function EditarPacientePage() {
               </div>
 
               <Link
-                href={`/pacientes/${paciente.id}`}
+                href="/pacientes"
                 aria-label="Fechar modal"
                 className="rounded-lg p-1.5 text-verde-acinzentado hover:bg-salvia-claro/60 hover:text-verde-profundo transition-colors"
               >

@@ -179,7 +179,7 @@ export function FormularioPaciente({
         router.push(`/pacientes/${criado.id}`);
       } else if (pacienteInicial) {
         await atualizarMutation.mutateAsync(dto);
-        router.push(`/pacientes/${pacienteInicial.id}`);
+        router.push("/pacientes");
       }
     } catch (erro) {
       if (erro instanceof ApiError && erro.status === 409) {
@@ -699,11 +699,7 @@ export function FormularioPaciente({
           <div className="flex items-center gap-2">
             {etapa === 1 ? (
               <Link
-                href={
-                  modo === "editar" && pacienteInicial
-                    ? `/pacientes/${pacienteInicial.id}`
-                    : "/pacientes"
-                }
+                href="/pacientes"
                 className="inline-flex items-center gap-1.5 rounded-xl border border-salvia-claro px-4 py-2 text-sm font-medium text-verde-profundo hover:bg-creme transition-colors"
               >
                 Cancelar
