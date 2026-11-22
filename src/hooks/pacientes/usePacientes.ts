@@ -16,9 +16,9 @@ import {
   listarPacientes,
   listarSessoesPaciente,
   reativarPaciente,
-} from "@/services/pacientesService";
+} from "@/services/pacientes/pacientesService";
 import { useUiStore } from "@/store/uiStore";
-import { PacienteRequestDTO } from "@/types/paciente";
+import { PacienteRequestDTO } from "@/types/pacientes/paciente";
 
 function tentarNovamenteSomenteErroServidor(count: number, erro: unknown) {
   return erro instanceof ApiError && erro.status >= 500 && count < 1;

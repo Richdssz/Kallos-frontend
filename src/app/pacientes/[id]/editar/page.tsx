@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { usePaciente } from "@/hooks/usePacientes";
+import { usePaciente } from "@/hooks/pacientes/usePacientes";
 import { FormularioPaciente } from "@/components/pacientes/FormularioPaciente";
 import { AlertCircle, X } from "lucide-react";
 
@@ -33,7 +33,9 @@ export default function EditarPacientePage() {
               Não foi possível carregar o paciente
             </h1>
             <p className="mt-1 text-sm text-verde-acinzentado">
-              {error instanceof Error ? error.message : "Paciente não encontrado."}
+              {error instanceof Error
+                ? error.message
+                : "Paciente não encontrado."}
             </p>
             <Link
               href="/pacientes"

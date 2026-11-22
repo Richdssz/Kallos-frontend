@@ -1,4 +1,4 @@
-import { PacienteResponseDTO, SessaoPacienteDTO } from "@/types/paciente";
+import { PacienteResponseDTO, SessaoPacienteDTO } from "@/types/pacientes/paciente";
 
 // Base em memória para fallback quando a API estiver offline.
 // Nota (RNF-F05): nunca gravar dados pessoais/clínicos em localStorage.

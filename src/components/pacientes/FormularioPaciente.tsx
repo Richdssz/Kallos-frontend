@@ -10,7 +10,7 @@ import {
   CAMPOS_ETAPA_2,
   PacienteFormData,
   pacienteSchema,
-} from "@/schemas/pacienteSchema";
+} from "@/schemas/pacientes/pacienteSchema";
 import {
   formatarCep,
   formatarCpf,
@@ -18,11 +18,8 @@ import {
 } from "@/utils/formatadores";
 import { buscarEnderecoPorCep } from "@/services/cepService";
 import { ApiError } from "@/services/api";
-import {
-  useAtualizarPaciente,
-  useCriarPaciente,
-} from "@/hooks/usePacientes";
-import { PacienteRequestDTO, PacienteResponseDTO } from "@/types/paciente";
+import { useAtualizarPaciente, useCriarPaciente } from "@/hooks/pacientes/usePacientes";
+import { PacienteRequestDTO, PacienteResponseDTO } from "@/types/pacientes/paciente";
 import {
   ArrowLeft,
   ArrowRight,
@@ -140,13 +137,17 @@ export function FormularioPaciente({
     setBuscandoCep(true);
     try {
       const endereco = await buscarEnderecoPorCep(digitos);
-      setValue("endereco.logradouro", endereco.logradouro, { shouldValidate: true });
+      setValue("endereco.logradouro", endereco.logradouro, {
+        shouldValidate: true,
+      });
       setValue("endereco.bairro", endereco.bairro, { shouldValidate: true });
       setValue("endereco.cidade", endereco.cidade, { shouldValidate: true });
       setValue("endereco.uf", endereco.uf, { shouldValidate: true });
     } catch (erro) {
       setErroCep(
-        erro instanceof Error ? erro.message : "Não foi possível consultar o CEP."
+        erro instanceof Error
+          ? erro.message
+          : "Não foi possível consultar o CEP.",
       );
     } finally {
       setBuscandoCep(false);
@@ -187,7 +188,7 @@ export function FormularioPaciente({
         setError("cpf", {
           message:
             erro.campos?.[0]?.mensagem ??
-            "Já existe um paciente cadastrado com este CPF.",
+            "Este CPF já está cadastrado para o psicólogo responsável.",
         });
         setEtapa(1);
         return;
@@ -196,7 +197,7 @@ export function FormularioPaciente({
       setErroGeral(
         erro instanceof Error
           ? erro.message
-          : "Não foi possível salvar os dados do paciente."
+          : "Não foi possível salvar os dados do paciente.",
       );
     }
   }
@@ -287,7 +288,11 @@ export function FormularioPaciente({
       </div>
 
       {/* Formulário */}
-      <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="p-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
+        noValidate
+        className="p-6"
+      >
         {erroGeral && (
           <div
             role="alert"
@@ -316,7 +321,9 @@ export function FormularioPaciente({
                 {...register("nome")}
               />
               {errors.nome && (
-                <p className="mt-1 text-xs text-red-600">{errors.nome.message}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.nome.message}
+                </p>
               )}
             </div>
 
@@ -342,7 +349,9 @@ export function FormularioPaciente({
                 })}
               />
               {errors.cpf && (
-                <p className="mt-1 text-xs text-red-600">{errors.cpf.message}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.cpf.message}
+                </p>
               )}
             </div>
 
@@ -410,7 +419,9 @@ export function FormularioPaciente({
                 {...register("email")}
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -454,7 +465,7 @@ export function FormularioPaciente({
                     setValue(
                       "telefoneEmergencia",
                       formatarTelefone(e.target.value),
-                      { shouldValidate: true }
+                      { shouldValidate: true },
                     ),
                 })}
               />
@@ -490,7 +501,7 @@ export function FormularioPaciente({
                 placeholder="00000-000"
                 aria-invalid={!!errors.endereco?.cep || !!erroCep}
                 className={`fonte-codigo ${inputClass(
-                  !!errors.endereco?.cep || !!erroCep
+                  !!errors.endereco?.cep || !!erroCep,
                 )}`}
                 {...register("endereco.cep", {
                   onChange: (e) => handleCepChange(e.target.value),
@@ -501,7 +512,9 @@ export function FormularioPaciente({
                   {errors.endereco.cep.message}
                 </p>
               )}
-              {erroCep && <p className="mt-1 text-xs text-amber-700">{erroCep}</p>}
+              {erroCep && (
+                <p className="mt-1 text-xs text-amber-700">{erroCep}</p>
+              )}
             </div>
 
             <div className="sm:col-span-4">

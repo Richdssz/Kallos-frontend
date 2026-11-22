@@ -8,7 +8,7 @@ import {
   usePaciente,
   useReativarPaciente,
   useSessoesPaciente,
-} from "@/hooks/usePacientes";
+} from "@/hooks/pacientes/usePacientes";
 import { formatarDataBR } from "@/utils/formatadores";
 import {
   AlertCircle,
@@ -221,7 +221,9 @@ export default function PerfilPacientePage() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-verde-acinzentado">CID vinculado</span>
+                    <span className="text-verde-acinzentado">
+                      CID vinculado
+                    </span>
                     <span className="font-medium text-verde-profundo">
                       {paciente.cid || "Não informado"}
                     </span>
@@ -339,13 +341,17 @@ export default function PerfilPacientePage() {
             <p className="mt-1.5 text-sm text-verde-acinzentado">
               {isAtivo ? (
                 <>
-                  <strong className="text-verde-profundo">{paciente.nome}</strong>{" "}
-                  passará para o status <strong>Inativo</strong>. Todos os registros
-                  clínicos e sessões serão preservados.
+                  <strong className="text-verde-profundo">
+                    {paciente.nome}
+                  </strong>{" "}
+                  passará para o status <strong>Inativo</strong>. Todos os
+                  registros clínicos e sessões serão preservados.
                 </>
               ) : (
                 <>
-                  <strong className="text-verde-profundo">{paciente.nome}</strong>{" "}
+                  <strong className="text-verde-profundo">
+                    {paciente.nome}
+                  </strong>{" "}
                   voltará para o status <strong>Ativo</strong>.
                 </>
               )}

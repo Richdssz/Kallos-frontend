@@ -24,6 +24,14 @@ interface FetchApiOptions extends RequestInit {
   timeoutMs?: number;
 }
 
+function obterTokenCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie
+    .split("; ")
+    .find((parte) => parte.startsWith("kallos-token="));
+  return match ? decodeURIComponent(match.split("=")[1]) : null;
+}
+
 // Cliente HTTP único da aplicação.
 // Centraliza URL base, cabeçalhos, timeout e conversão de erros HTTP.
 export async function fetchApi<T>(
@@ -36,8 +44,10 @@ export async function fetchApi<T>(
   if (!requestHeaders.has("Content-Type") && rest.body) {
     requestHeaders.set("Content-Type", "application/json");
   }
-  if (token) {
-    requestHeaders.set("Authorization", `Bearer ${token}`);
+
+  const tokenFinal = token ?? obterTokenCookie();
+  if (tokenFinal) {
+    requestHeaders.set("Authorization", `Bearer ${tokenFinal}`);
   }
 
   const resposta = await fetch(`${API_BASE_URL}${endpoint}`, {

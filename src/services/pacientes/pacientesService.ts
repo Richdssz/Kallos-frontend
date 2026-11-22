@@ -1,4 +1,4 @@
-import { PACIENTES_MOCK, SESSOES_POR_PACIENTE_MOCK } from "@/mocks/pacientes.mock";
+import { PACIENTES_MOCK, SESSOES_POR_PACIENTE_MOCK } from "@/mocks/pacientes/pacientes.mock";
 import { ApiError, fetchApi } from "@/services/api";
 import {
   PacienteRequestDTO,
@@ -7,7 +7,7 @@ import {
   PaginaResponse,
   SessaoPacienteDTO,
   StatusPaciente,
-} from "@/types/paciente";
+} from "@/types/pacientes/paciente";
 
 export interface FiltrosPacientes {
   busca?: string;
@@ -18,7 +18,7 @@ export interface FiltrosPacientes {
 
 const USAR_MOCK = process.env.NEXT_PUBLIC_USAR_MOCK === "true";
 
-// Estado em memória para o fallback funcionar em CRUD completo enquanto o backend não sobe.
+// Base em memória usada exclusivamente quando NEXT_PUBLIC_USAR_MOCK="true".
 const bancoMock: PacienteResponseDTO[] = structuredClone(PACIENTES_MOCK);
 
 function mascararCpf(cpf: string): string {
@@ -27,17 +27,13 @@ function mascararCpf(cpf: string): string {
   return `***.${digitos.slice(3, 6)}.***-${digitos.slice(9, 11)}`;
 }
 
-function isErroDeConexao(erro: unknown): boolean {
-  return !(erro instanceof ApiError);
-}
-
 // GET /api/pacientes?busca=&status=&page=&size=
 export async function listarPacientes(
   filtros: FiltrosPacientes = {}
 ): Promise<PaginaResponse<PacienteResumoDTO>> {
   const { busca = "", status = "Todos", page = 0, size = 5 } = filtros;
 
-  const filtrarMock = (): PaginaResponse<PacienteResumoDTO> => {
+  if (USAR_MOCK) {
     const termo = busca.trim().toLowerCase();
     const termoDigitos = termo.replace(/\D/g, "");
 
@@ -65,9 +61,7 @@ export async function listarPacientes(
       }));
 
     return { content, totalElements, totalPages, number: page, size };
-  };
-
-  if (USAR_MOCK) return filtrarMock();
+  }
 
   const params = new URLSearchParams();
   if (busca.trim()) params.set("busca", busca.trim());
@@ -75,65 +69,57 @@ export async function listarPacientes(
   params.set("page", String(page));
   params.set("size", String(size));
 
-  try {
-    return await fetchApi<PaginaResponse<PacienteResumoDTO>>(
-      `/pacientes?${params.toString()}`
-    );
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    return filtrarMock();
-  }
+  return fetchApi<PaginaResponse<PacienteResumoDTO>>(
+    `/pacientes?${params.toString()}`
+  );
 }
 
 // GET /api/pacientes/{id}
 export async function buscarPacientePorId(
   id: string
 ): Promise<PacienteResponseDTO> {
-  const buscarMock = (): PacienteResponseDTO => {
+  if (USAR_MOCK) {
     const encontrado = bancoMock.find((p) => p.id === id);
     if (!encontrado) {
       throw new ApiError(404, "Paciente não encontrado.");
     }
     return structuredClone(encontrado);
-  };
-
-  if (USAR_MOCK) return buscarMock();
-
-  try {
-    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`);
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    return buscarMock();
   }
+
+  return fetchApi<PacienteResponseDTO>(`/pacientes/${id}`);
 }
 
 // GET /api/pacientes/{id}/sessoes
 export async function listarSessoesPaciente(
   id: string
 ): Promise<SessaoPacienteDTO[]> {
-  if (USAR_MOCK) return SESSOES_POR_PACIENTE_MOCK[id] ?? [];
-
-  try {
-    return await fetchApi<SessaoPacienteDTO[]>(`/pacientes/${id}/sessoes`);
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
+  if (USAR_MOCK) {
     return SESSOES_POR_PACIENTE_MOCK[id] ?? [];
   }
+
+  return fetchApi<SessaoPacienteDTO[]>(`/pacientes/${id}/sessoes`);
 }
 
 // POST /api/pacientes
 export async function criarPaciente(
   dto: PacienteRequestDTO
 ): Promise<PacienteResponseDTO> {
-  const criarMock = (): PacienteResponseDTO => {
+  if (USAR_MOCK) {
     const cpfLimpo = dto.cpf.replace(/\D/g, "");
     const duplicado = bancoMock.some(
       (p) => p.cpf.replace(/\D/g, "") === cpfLimpo
     );
     if (duplicado) {
-      throw new ApiError(409, "Já existe um paciente cadastrado com este CPF.", [
-        { campo: "cpf", mensagem: "CPF já cadastrado para este psicólogo." },
-      ]);
+      throw new ApiError(
+        409,
+        "Este CPF já está cadastrado para o psicólogo responsável.",
+        [
+          {
+            campo: "cpf",
+            mensagem: "Este CPF já está cadastrado para o psicólogo responsável.",
+          },
+        ]
+      );
     }
 
     const novo: PacienteResponseDTO = {
@@ -144,19 +130,12 @@ export async function criarPaciente(
     };
     bancoMock.unshift(novo);
     return structuredClone(novo);
-  };
-
-  if (USAR_MOCK) return criarMock();
-
-  try {
-    return await fetchApi<PacienteResponseDTO>("/pacientes", {
-      method: "POST",
-      body: JSON.stringify(dto),
-    });
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    return criarMock();
   }
+
+  return fetchApi<PacienteResponseDTO>("/pacientes", {
+    method: "POST",
+    body: JSON.stringify(dto),
+  });
 }
 
 // PUT /api/pacientes/{id}
@@ -164,7 +143,7 @@ export async function atualizarPaciente(
   id: string,
   dto: PacienteRequestDTO
 ): Promise<PacienteResponseDTO> {
-  const atualizarMock = (): PacienteResponseDTO => {
+  if (USAR_MOCK) {
     const indice = bancoMock.findIndex((p) => p.id === id);
     if (indice === -1) {
       throw new ApiError(404, "Paciente não encontrado.");
@@ -175,66 +154,48 @@ export async function atualizarPaciente(
       (p) => p.id !== id && p.cpf.replace(/\D/g, "") === cpfLimpo
     );
     if (duplicado) {
-      throw new ApiError(409, "Já existe outro paciente com este CPF.", [
-        { campo: "cpf", mensagem: "CPF já cadastrado para este psicólogo." },
-      ]);
+      throw new ApiError(
+        409,
+        "Este CPF já está cadastrado para o psicólogo responsável.",
+        [
+          {
+            campo: "cpf",
+            mensagem: "Este CPF já está cadastrado para o psicólogo responsável.",
+          },
+        ]
+      );
     }
 
     bancoMock[indice] = { ...bancoMock[indice], ...dto };
     return structuredClone(bancoMock[indice]);
-  };
-
-  if (USAR_MOCK) return atualizarMock();
-
-  try {
-    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(dto),
-    });
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    return atualizarMock();
   }
+
+  return fetchApi<PacienteResponseDTO>(`/pacientes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(dto),
+  });
 }
 
 // DELETE /api/pacientes/{id} (desativação lógica)
 export async function desativarPaciente(id: string): Promise<void> {
-  const desativarMock = () => {
+  if (USAR_MOCK) {
     const paciente = bancoMock.find((p) => p.id === id);
     if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
     paciente.status = "Inativo";
-  };
-
-  if (USAR_MOCK) {
-    desativarMock();
     return;
   }
 
-  try {
-    await fetchApi<void>(`/pacientes/${id}`, { method: "DELETE" });
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    desativarMock();
-  }
+  await fetchApi<void>(`/pacientes/${id}`, { method: "DELETE" });
 }
 
 // PATCH /api/pacientes/{id}/reativar
 export async function reativarPaciente(id: string): Promise<void> {
-  const reativarMock = () => {
+  if (USAR_MOCK) {
     const paciente = bancoMock.find((p) => p.id === id);
     if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
     paciente.status = "Ativo";
-  };
-
-  if (USAR_MOCK) {
-    reativarMock();
     return;
   }
 
-  try {
-    await fetchApi<void>(`/pacientes/${id}/reativar`, { method: "PATCH" });
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-    reativarMock();
-  }
+  await fetchApi<void>(`/pacientes/${id}/reativar`, { method: "PATCH" });
 }

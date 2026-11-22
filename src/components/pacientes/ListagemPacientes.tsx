@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePacientes } from "@/hooks/usePacientes";
-import { StatusPaciente } from "@/types/paciente";
+import { usePacientes } from "@/hooks/pacientes/usePacientes";
+import { StatusPaciente } from "@/types/pacientes/paciente";
 import { formatarDataBR } from "@/utils/formatadores";
 import {
   Search,
@@ -20,7 +20,9 @@ const ITENS_POR_PAGINA = 5;
 export function ListagemPacientes() {
   const [busca, setBusca] = useState("");
   const [buscaDebounced, setBuscaDebounced] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState<"Todos" | StatusPaciente>("Todos");
+  const [filtroStatus, setFiltroStatus] = useState<"Todos" | StatusPaciente>(
+    "Todos",
+  );
   const [pagina, setPagina] = useState(0);
 
   // Aguarda 300ms após o usuário parar de digitar antes de consultar a API.
@@ -106,7 +108,8 @@ export function ListagemPacientes() {
 
             <div className="flex items-center gap-3">
               <span className="text-xs text-verde-acinzentado">
-                {totalElementos} {totalElementos === 1 ? "paciente" : "pacientes"}
+                {totalElementos}{" "}
+                {totalElementos === 1 ? "paciente" : "pacientes"}
               </span>
 
               <div className="relative">
@@ -162,20 +165,40 @@ export function ListagemPacientes() {
               <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-salvia-claro text-verde-kallos">
                 <Users className="h-5 w-5" />
               </div>
-              <p className="text-sm font-semibold text-verde-profundo">
-                Nenhum paciente encontrado
-              </p>
-              <p className="mt-1 text-xs text-verde-acinzentado">
-                Tente buscar por outro nome/CPF ou limpe os filtros aplicados.
-              </p>
-              {(busca || filtroStatus !== "Todos") && (
-                <button
-                  type="button"
-                  onClick={limparFiltros}
-                  className="mt-4 rounded-xl border border-salvia-claro px-4 py-2 text-xs font-medium text-verde-kallos hover:bg-salvia-claro/50 transition-colors cursor-pointer"
-                >
-                  Limpar filtros
-                </button>
+              {busca || filtroStatus !== "Todos" ? (
+                <>
+                  <p className="text-sm font-semibold text-verde-profundo">
+                    Nenhum paciente encontrado
+                  </p>
+                  <p className="mt-1 text-xs text-verde-acinzentado">
+                    Tente buscar por outro nome/CPF ou limpe os filtros
+                    aplicados.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={limparFiltros}
+                    className="mt-4 rounded-xl border border-salvia-claro px-4 py-2 text-xs font-medium text-verde-kallos hover:bg-salvia-claro/50 transition-colors cursor-pointer"
+                  >
+                    Limpar filtros
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold text-verde-profundo">
+                    Nenhum paciente cadastrado
+                  </p>
+                  <p className="mt-1 text-xs text-verde-acinzentado">
+                    Cadastre seu primeiro paciente para iniciar o
+                    acompanhamento.
+                  </p>
+                  <Link
+                    href="/pacientes/novo"
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-verde-kallos px-4 py-2 text-xs font-medium text-white hover:bg-verde-profundo transition-colors"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Novo paciente
+                  </Link>
+                </>
               )}
             </div>
           ) : (
@@ -188,7 +211,9 @@ export function ListagemPacientes() {
                     <th className="px-4 py-3.5 font-medium">Contato</th>
                     <th className="px-4 py-3.5 font-medium">Última sessão</th>
                     <th className="px-4 py-3.5 font-medium">Status</th>
-                    <th className="px-6 py-3.5 text-right font-medium">Ações</th>
+                    <th className="px-6 py-3.5 text-right font-medium">
+                      Ações
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-salvia-claro/80 text-sm">
