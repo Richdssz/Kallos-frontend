@@ -10,10 +10,8 @@ export interface EnderecoDTO {
   uf: string;
 }
 
-/**
- * Equivalente ao PacienteResumoDTO do backend (GET /api/pacientes).
- * O CPF já vem mascarado pela API para proteger dados pessoais na listagem.
- */
+// Equivalente ao PacienteResumoDTO do backend (GET /api/pacientes).
+// O CPF já vem mascarado pela API para proteger dados pessoais na listagem.
 export interface PacienteResumoDTO {
   id: string;
   nome: string;
@@ -23,10 +21,8 @@ export interface PacienteResumoDTO {
   status: StatusPaciente;
 }
 
-/**
- * Equivalente ao PacienteResponseDTO do backend (GET /api/pacientes/{id}).
- * Traz os dados completos para a tela de perfil e edição.
- */
+// Equivalente ao PacienteResponseDTO do backend (GET /api/pacientes/{id}).
+// Traz os dados completos para a tela de perfil e edição.
 export interface PacienteResponseDTO {
   id: string;
   nome: string;
@@ -44,9 +40,7 @@ export interface PacienteResponseDTO {
   observacoes?: string;
 }
 
-/**
- * Equivalente ao PacienteRequestDTO do backend (POST e PUT /api/pacientes).
- */
+// Equivalente ao PacienteRequestDTO do backend (POST e PUT /api/pacientes).
 export interface PacienteRequestDTO {
   nome: string;
   cpf: string;
@@ -61,9 +55,7 @@ export interface PacienteRequestDTO {
   observacoes?: string;
 }
 
-/**
- * Equivalente ao histórico retornado por GET /api/pacientes/{id}/sessoes.
- */
+// Equivalente ao histórico retornado por GET /api/pacientes/{id}/sessoes.
 export interface SessaoPacienteDTO {
   id: string;
   inicioEm: string;
@@ -74,13 +66,11 @@ export interface SessaoPacienteDTO {
   statusPagamento: "Pendente" | "Pago";
 }
 
-/**
- * Equivalente ao Page<T> do Spring Data JPA.
- */
+// Estrutura padrão de resposta paginada da API.
 export interface PaginaResponse<T> {
   content: T[];
   totalElements: number;
   totalPages: number;
-  number: number; // página atual (0-indexed no Spring)
+  number: number; // página atual (começa em 0)
   size: number;
 }

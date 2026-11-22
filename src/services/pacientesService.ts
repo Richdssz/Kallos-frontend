@@ -16,6 +16,8 @@ export interface FiltrosPacientes {
   size?: number;
 }
 
+const USAR_MOCK = process.env.NEXT_PUBLIC_USAR_MOCK === "true";
+
 // Estado em memória para o fallback funcionar em CRUD completo enquanto o backend não sobe.
 const bancoMock: PacienteResponseDTO[] = structuredClone(PACIENTES_MOCK);
 
@@ -29,27 +31,13 @@ function isErroDeConexao(erro: unknown): boolean {
   return !(erro instanceof ApiError);
 }
 
-/**
- * GET /api/pacientes?busca=&status=&page=&size=
- */
+// GET /api/pacientes?busca=&status=&page=&size=
 export async function listarPacientes(
   filtros: FiltrosPacientes = {}
 ): Promise<PaginaResponse<PacienteResumoDTO>> {
   const { busca = "", status = "Todos", page = 0, size = 5 } = filtros;
 
-  const params = new URLSearchParams();
-  if (busca.trim()) params.set("busca", busca.trim());
-  if (status !== "Todos") params.set("status", status);
-  params.set("page", String(page));
-  params.set("size", String(size));
-
-  try {
-    return await fetchApi<PaginaResponse<PacienteResumoDTO>>(
-      `/pacientes?${params.toString()}`
-    );
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-
+  const filtrarMock = (): PaginaResponse<PacienteResumoDTO> => {
     const termo = busca.trim().toLowerCase();
     const termoDigitos = termo.replace(/\D/g, "");
 
@@ -77,34 +65,54 @@ export async function listarPacientes(
       }));
 
     return { content, totalElements, totalPages, number: page, size };
+  };
+
+  if (USAR_MOCK) return filtrarMock();
+
+  const params = new URLSearchParams();
+  if (busca.trim()) params.set("busca", busca.trim());
+  if (status !== "Todos") params.set("status", status);
+  params.set("page", String(page));
+  params.set("size", String(size));
+
+  try {
+    return await fetchApi<PaginaResponse<PacienteResumoDTO>>(
+      `/pacientes?${params.toString()}`
+    );
+  } catch (erro) {
+    if (!isErroDeConexao(erro)) throw erro;
+    return filtrarMock();
   }
 }
 
-/**
- * GET /api/pacientes/{id}
- */
+// GET /api/pacientes/{id}
 export async function buscarPacientePorId(
   id: string
 ): Promise<PacienteResponseDTO> {
-  try {
-    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`);
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-
+  const buscarMock = (): PacienteResponseDTO => {
     const encontrado = bancoMock.find((p) => p.id === id);
     if (!encontrado) {
       throw new ApiError(404, "Paciente não encontrado.");
     }
     return structuredClone(encontrado);
+  };
+
+  if (USAR_MOCK) return buscarMock();
+
+  try {
+    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`);
+  } catch (erro) {
+    if (!isErroDeConexao(erro)) throw erro;
+    return buscarMock();
   }
 }
 
-/**
- * GET /api/pacientes/{id}/sessoes
- */
+// GET /api/pacientes/{id}/sessoes
 export async function listarSessoesPaciente(
   id: string
 ): Promise<SessaoPacienteDTO[]> {
+  if (USAR_MOCK) return SESSOES_POR_PACIENTE_MOCK[id] ?? [];
+
   try {
     return await fetchApi<SessaoPacienteDTO[]>(`/pacientes/${id}/sessoes`);
   } catch (erro) {
@@ -113,20 +121,11 @@ export async function listarSessoesPaciente(
   }
 }
 
-/**
- * POST /api/pacientes
- */
+// POST /api/pacientes
 export async function criarPaciente(
   dto: PacienteRequestDTO
 ): Promise<PacienteResponseDTO> {
-  try {
-    return await fetchApi<PacienteResponseDTO>("/pacientes", {
-      method: "POST",
-      body: JSON.stringify(dto),
-    });
-  } catch (erro) {
-    if (!isErroDeConexao(erro)) throw erro;
-
+  const criarMock = (): PacienteResponseDTO => {
     const cpfLimpo = dto.cpf.replace(/\D/g, "");
     const duplicado = bancoMock.some(
       (p) => p.cpf.replace(/\D/g, "") === cpfLimpo
@@ -145,24 +144,27 @@ export async function criarPaciente(
     };
     bancoMock.unshift(novo);
     return structuredClone(novo);
-  }
-}
+  };
 
-/**
- * PUT /api/pacientes/{id}
- */
-export async function atualizarPaciente(
-  id: string,
-  dto: PacienteRequestDTO
-): Promise<PacienteResponseDTO> {
+  if (USAR_MOCK) return criarMock();
+
   try {
-    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`, {
-      method: "PUT",
+    return await fetchApi<PacienteResponseDTO>("/pacientes", {
+      method: "POST",
       body: JSON.stringify(dto),
     });
   } catch (erro) {
     if (!isErroDeConexao(erro)) throw erro;
+    return criarMock();
+  }
+}
 
+// PUT /api/pacientes/{id}
+export async function atualizarPaciente(
+  id: string,
+  dto: PacienteRequestDTO
+): Promise<PacienteResponseDTO> {
+  const atualizarMock = (): PacienteResponseDTO => {
     const indice = bancoMock.findIndex((p) => p.id === id);
     if (indice === -1) {
       throw new ApiError(404, "Paciente não encontrado.");
@@ -180,35 +182,59 @@ export async function atualizarPaciente(
 
     bancoMock[indice] = { ...bancoMock[indice], ...dto };
     return structuredClone(bancoMock[indice]);
+  };
+
+  if (USAR_MOCK) return atualizarMock();
+
+  try {
+    return await fetchApi<PacienteResponseDTO>(`/pacientes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(dto),
+    });
+  } catch (erro) {
+    if (!isErroDeConexao(erro)) throw erro;
+    return atualizarMock();
   }
 }
 
-/**
- * DELETE /api/pacientes/{id} (desativação lógica)
- */
+// DELETE /api/pacientes/{id} (desativação lógica)
 export async function desativarPaciente(id: string): Promise<void> {
+  const desativarMock = () => {
+    const paciente = bancoMock.find((p) => p.id === id);
+    if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
+    paciente.status = "Inativo";
+  };
+
+  if (USAR_MOCK) {
+    desativarMock();
+    return;
+  }
+
   try {
     await fetchApi<void>(`/pacientes/${id}`, { method: "DELETE" });
   } catch (erro) {
     if (!isErroDeConexao(erro)) throw erro;
-
-    const paciente = bancoMock.find((p) => p.id === id);
-    if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
-    paciente.status = "Inativo";
+    desativarMock();
   }
 }
 
-/**
- * PATCH /api/pacientes/{id}/reativar
- */
+// PATCH /api/pacientes/{id}/reativar
 export async function reativarPaciente(id: string): Promise<void> {
+  const reativarMock = () => {
+    const paciente = bancoMock.find((p) => p.id === id);
+    if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
+    paciente.status = "Ativo";
+  };
+
+  if (USAR_MOCK) {
+    reativarMock();
+    return;
+  }
+
   try {
     await fetchApi<void>(`/pacientes/${id}/reativar`, { method: "PATCH" });
   } catch (erro) {
     if (!isErroDeConexao(erro)) throw erro;
-
-    const paciente = bancoMock.find((p) => p.id === id);
-    if (!paciente) throw new ApiError(404, "Paciente não encontrado.");
-    paciente.status = "Ativo";
+    reativarMock();
   }
 }

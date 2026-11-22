@@ -6,6 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { ApiError } from "@/services/api";
 import {
   atualizarPaciente,
   buscarPacientePorId,
@@ -19,10 +20,12 @@ import {
 import { useUiStore } from "@/store/uiStore";
 import { PacienteRequestDTO } from "@/types/paciente";
 
-/**
- * Chaves de cache centralizadas para o TanStack Query.
- * Sempre que uma mutação altera dados no servidor, invalidamos essas chaves.
- */
+function tentarNovamenteSomenteErroServidor(count: number, erro: unknown) {
+  return erro instanceof ApiError && erro.status >= 500 && count < 1;
+}
+
+// Chaves de cache centralizadas para o TanStack Query.
+// Sempre que uma mutação altera dados no servidor, invalidamos essas chaves.
 export const pacienteKeys = {
   all: ["pacientes"] as const,
   lista: (filtros: FiltrosPacientes) => ["pacientes", "lista", filtros] as const,
@@ -30,43 +33,38 @@ export const pacienteKeys = {
   sessoes: (id: string) => ["pacientes", "sessoes", id] as const,
 };
 
-/**
- * Consulta paginada de pacientes (GET /api/pacientes).
- */
+// Consulta paginada de pacientes (GET /api/pacientes).
 export function usePacientes(filtros: FiltrosPacientes) {
   return useQuery({
     queryKey: pacienteKeys.lista(filtros),
     queryFn: () => listarPacientes(filtros),
     // Mantém a página anterior visível enquanto a próxima carrega (sem piscar a tabela).
     placeholderData: keepPreviousData,
+    retry: tentarNovamenteSomenteErroServidor,
   });
 }
 
-/**
- * Consulta dos dados completos de 1 paciente (GET /api/pacientes/{id}).
- */
+// Consulta dos dados completos de 1 paciente (GET /api/pacientes/{id}).
 export function usePaciente(id: string) {
   return useQuery({
     queryKey: pacienteKeys.detalhe(id),
     queryFn: () => buscarPacientePorId(id),
     enabled: Boolean(id),
+    retry: tentarNovamenteSomenteErroServidor,
   });
 }
 
-/**
- * Histórico de sessões vinculadas ao paciente (GET /api/pacientes/{id}/sessoes).
- */
+// Histórico de sessões vinculadas ao paciente (GET /api/pacientes/{id}/sessoes).
 export function useSessoesPaciente(id: string) {
   return useQuery({
     queryKey: pacienteKeys.sessoes(id),
     queryFn: () => listarSessoesPaciente(id),
     enabled: Boolean(id),
+    retry: tentarNovamenteSomenteErroServidor,
   });
 }
 
-/**
- * Mutação de criação (POST /api/pacientes).
- */
+// Mutação de criação (POST /api/pacientes).
 export function useCriarPaciente() {
   const queryClient = useQueryClient();
   const mostrarNotificacao = useUiStore((s) => s.mostrarNotificacao);
@@ -80,9 +78,7 @@ export function useCriarPaciente() {
   });
 }
 
-/**
- * Mutação de atualização (PUT /api/pacientes/{id}).
- */
+// Mutação de atualização (PUT /api/pacientes/{id}).
 export function useAtualizarPaciente(id: string) {
   const queryClient = useQueryClient();
   const mostrarNotificacao = useUiStore((s) => s.mostrarNotificacao);
@@ -97,9 +93,7 @@ export function useAtualizarPaciente(id: string) {
   });
 }
 
-/**
- * Mutação de desativação lógica (DELETE /api/pacientes/{id}).
- */
+// Mutação de desativação lógica (DELETE /api/pacientes/{id}).
 export function useDesativarPaciente() {
   const queryClient = useQueryClient();
   const mostrarNotificacao = useUiStore((s) => s.mostrarNotificacao);
@@ -114,9 +108,7 @@ export function useDesativarPaciente() {
   });
 }
 
-/**
- * Mutação de reativação (PATCH /api/pacientes/{id}/reativar).
- */
+// Mutação de reativação (PATCH /api/pacientes/{id}/reativar).
 export function useReativarPaciente() {
   const queryClient = useQueryClient();
   const mostrarNotificacao = useUiStore((s) => s.mostrarNotificacao);

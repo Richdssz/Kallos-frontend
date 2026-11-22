@@ -6,9 +6,7 @@ export interface CampoErro {
   mensagem: string;
 }
 
-/**
- * Erro padronizado da API REST (equivalente ao corpo devolvido pelo @RestControllerAdvice).
- */
+// Erro padronizado devolvido pela API REST.
 export class ApiError extends Error {
   status: number;
   campos?: CampoErro[];
@@ -26,15 +24,13 @@ interface FetchApiOptions extends RequestInit {
   timeoutMs?: number;
 }
 
-/**
- * Cliente HTTP único da aplicação.
- * Centraliza URL base, cabeçalhos, timeout e conversão de erros HTTP.
- */
+// Cliente HTTP único da aplicação.
+// Centraliza URL base, cabeçalhos, timeout e conversão de erros HTTP.
 export async function fetchApi<T>(
   endpoint: string,
   options: FetchApiOptions = {}
 ): Promise<T> {
-  const { token, timeoutMs = 4000, headers, ...rest } = options;
+  const { token, timeoutMs = 1500, headers, ...rest } = options;
 
   const requestHeaders = new Headers(headers);
   if (!requestHeaders.has("Content-Type") && rest.body) {

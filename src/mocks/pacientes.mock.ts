@@ -1,9 +1,7 @@
 import { PacienteResponseDTO, SessaoPacienteDTO } from "@/types/paciente";
 
-/**
- * Base em memória para fallback quando a API Java estiver offline.
- * Nota (RNF-F05): nunca gravar dados pessoais/clínicos em localStorage.
- */
+// Base em memória para fallback quando a API estiver offline.
+// Nota (RNF-F05): nunca gravar dados pessoais/clínicos em localStorage.
 export const PACIENTES_MOCK: PacienteResponseDTO[] = [
   {
     id: "1",

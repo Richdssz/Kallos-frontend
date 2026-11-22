@@ -17,10 +17,8 @@ interface UiState {
   limparNotificacao: () => void;
 }
 
-/**
- * Store global de interface (Zustand).
- * Guarda apenas preferências visuais e notificações (nunca dados clínicos ou pessoais).
- */
+// Store global de interface (Zustand).
+// Guarda apenas preferências visuais e notificações (nunca dados clínicos ou pessoais).
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
@@ -39,6 +37,6 @@ export const useUiStore = create<UiState>()(
       name: "kallos-ui-storage",
       // Persiste apenas a preferência da sidebar, nunca mensagens temporárias.
       partialize: (state) => ({ sidebarRecolhida: state.sidebarRecolhida }),
-    }
-  )
+    },
+  ),
 );
