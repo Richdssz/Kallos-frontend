@@ -6,7 +6,7 @@ import {
   RotateCw,
   Users,
 } from 'lucide-react';
-import type { IndicadoresPsicologo } from '../types/painel';
+import type { IndicadoresPsicologo } from '@/types/painel/painel';
 
 interface PainelIndicadoresProps {
   dados?: IndicadoresPsicologo;

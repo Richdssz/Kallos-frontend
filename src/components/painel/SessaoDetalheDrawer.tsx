@@ -8,8 +8,8 @@ import {
   Video,
   X,
 } from 'lucide-react';
-import { formatarNomePaciente } from '../services/painelApi';
-import type { SessaoHoje } from '../types/painel';
+import { formatarNomePaciente } from '@/services/painel/painelApi';
+import type { SessaoHoje } from '@/types/painel/painel';
 
 interface SessaoDetalheDrawerProps {
   sessao: SessaoHoje | null;
@@ -136,8 +136,8 @@ export function SessaoDetalheDrawer({
 
           <p className="text-xs leading-relaxed text-[#556650]">
             {prontuarioHabilitado
-              ? 'Esta sessão permite consultar o histórico clínico ou registrar evolução diretamente no prontuário do paciente (RF-F23).'
-              : 'O registro de evolução clínica é habilitado após a conclusão da consulta na tela de Agenda e consultas (RF-F32).'}
+              ? 'Esta sessão permite consultar o histórico clínico ou registrar evolução diretamente no prontuário do paciente.'
+              : 'O registro de evolução clínica é habilitado após a conclusão da consulta na tela de Agenda e consultas.'}
           </p>
         </div>
 

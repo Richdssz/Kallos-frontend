@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { NotificacaoUI, PainelEstadoModo } from '../types/painel';
+import type { NotificacaoUI, PainelEstadoModo } from '@/types/painel/painel';
 
 interface UIState {
   menuRecolhido: boolean;

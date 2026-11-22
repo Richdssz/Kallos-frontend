@@ -12,12 +12,12 @@ import {
   Video,
   XCircle,
 } from 'lucide-react';
-import { formatarNomePaciente } from '../services/painelApi';
+import { formatarNomePaciente } from '@/services/painel/painelApi';
 import type {
   FiltroSessoesHoje,
   SessaoHoje,
   StatusSessao,
-} from '../types/painel';
+} from '@/types/painel/painel';
 
 interface AtendimentosHojeCardProps {
   sessoes?: SessaoHoje[];

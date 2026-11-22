@@ -3,7 +3,7 @@ import type {
   PerfilAcesso,
   SituacaoSessaoAuth,
   UsuarioAutenticado,
-} from '../types/painel';
+} from '@/types/painel/painel';
 
 interface AuthState {
   usuario: UsuarioAutenticado | null;

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -7,7 +9,6 @@ import {
   EyeOff,
   RefreshCw,
   Settings,
-  SlidersHorizontal,
   UserCheck,
   X,
 } from 'lucide-react';
@@ -15,23 +16,20 @@ import {
   buscarIndicadores,
   buscarRitmoMes,
   buscarSessoesHoje,
-} from '../services/painelApi';
-import { useAuthStore } from '../stores/authStore';
-import { useUIStore } from '../stores/uiStore';
+} from '@/services/painel/painelApi';
+import { useAuthStore } from '@/store/painel/authStore';
+import { useUIStore } from '@/store/painel/uiStore';
 import type {
   DestinoNavegacao,
   RotaNavegacao,
   SessaoHoje,
-} from '../types/painel';
+} from '@/types/painel/painel';
 import { AtendimentosHojeCard } from './AtendimentosHojeCard';
-import { FluxosPainelBloco } from './FluxosPainelBloco';
 import { PainelEstadoErro } from './PainelEstadoErro';
 import { PainelIndicadores } from './PainelIndicadores';
 import { RitmoMesCard } from './RitmoMesCard';
 import { RotaExternaModal } from './RotaExternaModal';
 import { SessaoDetalheDrawer } from './SessaoDetalheDrawer';
-import { Sidebar } from '@/components/Sidebar';
-import { TopBar } from '@/components/TopBar';
 
 function formatarHoraAtualizacao(timestamp: number): string {
   if (!timestamp) return '';
@@ -46,14 +44,11 @@ export function PainelGeralPage() {
   const usuario = useAuthStore((s) => s.usuario);
   const perfil = useAuthStore((s) => s.perfil);
   const definirPerfil = useAuthStore((s) => s.definirPerfil);
-  const encerrarSessao = useAuthStore((s) => s.encerrarSessao);
 
   const painelModo = useUIStore((s) => s.painelModo);
   const setPainelModo = useUIStore((s) => s.setPainelModo);
   const modoPrivacidade = useUIStore((s) => s.modoPrivacidade);
   const alternarModoPrivacidade = useUIStore((s) => s.alternarModoPrivacidade);
-  const inspecaoAberta = useUIStore((s) => s.inspecaoAberta);
-  const alternarInspecaoAberta = useUIStore((s) => s.alternarInspecaoAberta);
   const notificacao = useUIStore((s) => s.notificacao);
   const exibirNotificacao = useUIStore((s) => s.exibirNotificacao);
   const limparNotificacao = useUIStore((s) => s.limparNotificacao);
@@ -177,28 +172,9 @@ export function PainelGeralPage() {
     });
   };
 
-  const lidarSair = () => {
-    setSessaoSelecionada(null);
-    setRotaModal(null);
-    limparNotificacao();
-    queryClient.clear();
-    encerrarSessao();
-    document.cookie = 'kallos-auth=; Path=/; Max-Age=0; SameSite=Lax';
-    window.location.href = '/login';
-  };
-
   return (
-    <div className="flex min-h-screen bg-[#FAF6F2] text-[#1D2C20]">
-      <Sidebar
-        rotaAtiva="/painel"
-        onNavegar={lidarNavegacao}
-        onSair={lidarSair}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
-
-        <main className="mx-auto w-full max-w-[1280px] flex-1 space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <>
+      <main className="mx-auto w-full max-w-[1280px] flex-1 space-y-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
           {notificacao && (
             <div
               role="status"
@@ -311,25 +287,6 @@ export function PainelGeralPage() {
 
               <button
                 type="button"
-                onClick={alternarInspecaoAberta}
-                aria-expanded={inspecaoAberta}
-                className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936] ${
-                  inspecaoAberta
-                    ? 'border-[#334936] bg-[#E6ECE2]/80 text-[#1D2C20]'
-                    : 'border-[#E6ECE2] bg-white text-[#556650] hover:border-[#ACBFA9] hover:text-[#1D2C20]'
-                }`}
-                title="Alternar estados da Tela 02 e ver documentação"
-              >
-                <SlidersHorizontal
-                  className="h-4 w-4 text-[#334936]"
-                  strokeWidth={1.75}
-                  aria-hidden="true"
-                />
-                <span className="hidden md:inline">Estados</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={lidarAbrirAgenda}
                 className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#334936] px-4 text-sm font-medium whitespace-nowrap text-[#FAF6F2] transition-colors hover:bg-[#1D2C20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#334936]"
               >
@@ -358,8 +315,7 @@ export function PainelGeralPage() {
                       Indicadores clínicos disponíveis apenas para psicólogos
                     </h2>
                     <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[#556650]">
-                      Conforme o requisito <span className="font-mono font-medium text-[#1D2C20]">RF-F05</span>,
-                      os indicadores do Painel geral consideram somente os
+                      Os indicadores do Painel geral consideram somente os
                       pacientes, sessões e prontuários vinculados ao psicólogo
                       autenticado. Como administrador, você gerencia o
                       consultório em Configurações.
@@ -432,23 +388,7 @@ export function PainelGeralPage() {
               </div>
             </>
           )}
-
-          <FluxosPainelBloco
-            aberto={inspecaoAberta}
-            onAlternarAberto={alternarInspecaoAberta}
-            modoAtual={painelModo}
-            perfilAtual={perfil}
-            onSelecionarModo={(modo) => {
-              setSessaoSelecionada(null);
-              setPainelModo(modo);
-            }}
-            onSelecionarPerfil={(novoPerfil) => {
-              setSessaoSelecionada(null);
-              definirPerfil(novoPerfil);
-            }}
-          />
         </main>
-      </div>
 
       <SessaoDetalheDrawer
         sessao={sessaoSelecionada}
@@ -462,6 +402,6 @@ export function PainelGeralPage() {
         destino={rotaModal}
         onFechar={() => setRotaModal(null)}
       />
-    </div>
+    </>
   );
 }

@@ -3,7 +3,7 @@ import type {
   PainelEstadoModo,
   RitmoMes,
   SessaoHoje,
-} from '../types/painel';
+} from '@/types/painel/painel';
 
 const atraso = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

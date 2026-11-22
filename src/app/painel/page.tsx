@@ -1,6 +1,6 @@
 "use client";
 
-import { PainelGeralPage } from "@/features/painel/components/PainelGeralPage";
+import { PainelGeralPage } from "@/components/painel/PainelGeralPage";
 
 export default function PainelPage() {
   return <PainelGeralPage />;

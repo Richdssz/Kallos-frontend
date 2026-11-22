@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { ArrowLeft, Compass, X } from 'lucide-react';
-import type { DestinoNavegacao, RotaNavegacao } from '../types/painel';
+import type { DestinoNavegacao, RotaNavegacao } from '@/types/painel/painel';
 
 interface RotaExternaModalProps {
   destino: DestinoNavegacao | null;

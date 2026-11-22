@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertTriangle, BarChart3, RotateCw } from 'lucide-react';
-import type { RitmoMes } from '../types/painel';
+import type { RitmoMes } from '@/types/painel/painel';
 
 interface RitmoMesCardProps {
   ritmo?: RitmoMes;
