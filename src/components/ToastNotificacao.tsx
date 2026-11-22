@@ -1,22 +1,61 @@
 "use client";
 
-import { useEffect } from "react";
-import { useUiStore } from "@/store/uiStore";
+import { useEffect, useRef, useState } from "react";
+import { NotificacaoUI, useUiStore } from "@/store/uiStore";
 import { CheckCircle2, AlertCircle, AlertTriangle, X } from "lucide-react";
+
+const DURACAO_EXIBICAO_MS = 3800;
+const DURACAO_SAIDA_MS = 250;
 
 export function ToastNotificacao() {
   const notificacao = useUiStore((s) => s.notificacao);
   const limparNotificacao = useUiStore((s) => s.limparNotificacao);
 
-  useEffect(() => {
-    if (!notificacao) return;
-    const timer = setTimeout(() => {
-      limparNotificacao();
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, [notificacao, limparNotificacao]);
+  const [notificacaoAtual, setNotificacaoAtual] =
+    useState<NotificacaoUI | null>(null);
+  const [visivel, setVisivel] = useState(false);
 
-  if (!notificacao) return null;
+  const timerFecharRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerLimparRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function limparTimers() {
+    if (timerFecharRef.current) clearTimeout(timerFecharRef.current);
+    if (timerLimparRef.current) clearTimeout(timerLimparRef.current);
+  }
+
+  function fecharComAnimacao() {
+    limparTimers();
+    setVisivel(false);
+    timerLimparRef.current = setTimeout(() => {
+      setNotificacaoAtual(null);
+      limparNotificacao();
+    }, DURACAO_SAIDA_MS);
+  }
+
+  useEffect(() => {
+    if (!notificacao) {
+      setVisivel(false);
+      return;
+    }
+
+    limparTimers();
+    setNotificacaoAtual(notificacao);
+
+    const frame = requestAnimationFrame(() => {
+      setVisivel(true);
+    });
+
+    timerFecharRef.current = setTimeout(() => {
+      fecharComAnimacao();
+    }, DURACAO_EXIBICAO_MS);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      limparTimers();
+    };
+  }, [notificacao]);
+
+  if (!notificacaoAtual) return null;
 
   const estilos = {
     sucesso: {
@@ -31,22 +70,22 @@ export function ToastNotificacao() {
       container: "border-amber-200 bg-amber-50 text-amber-900",
       icone: <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />,
     },
-  }[notificacao.tipo];
+  }[notificacaoAtual.tipo];
 
   return (
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-5 right-5 z-50 max-w-sm"
+      className={`t-toast ${visivel ? "is-open" : ""} fixed bottom-5 right-5 z-50 max-w-sm`}
     >
       <div
         className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg ${estilos.container}`}
       >
         {estilos.icone}
-        <p className="text-sm font-medium">{notificacao.mensagem}</p>
+        <p className="text-sm font-medium">{notificacaoAtual.mensagem}</p>
         <button
           type="button"
-          onClick={limparNotificacao}
+          onClick={fecharComAnimacao}
           aria-label="Fechar notificação"
           className="ml-2 rounded-lg p-1 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
         >
@@ -56,4 +95,3 @@ export function ToastNotificacao() {
     </div>
   );
 }
-
