@@ -4,11 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { ToastNotificacao } from "@/components/ToastNotificacao";
 
-export default function Providers({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -18,7 +14,7 @@ export default function Providers({
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
 
   return (
