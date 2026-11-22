@@ -102,7 +102,7 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
         <button
           type="button"
           onClick={() => setMenuMobileAberto(false)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#E6ECE2] transition-colors hover:bg-[#FAF6F2]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] lg:hidden"
+          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-[#E6ECE2] transition-colors hover:bg-[#FAF6F2]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] lg:hidden"
           aria-label="Fechar menu lateral"
         >
           <X className="h-5 w-5" strokeWidth={1.75} />
@@ -112,7 +112,7 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
           <button
             type="button"
             onClick={alternarMenuRecolhido}
-            className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#ACBFA9] transition-colors hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] lg:inline-flex"
+            className="hidden h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#ACBFA9] transition-colors hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] lg:inline-flex"
             aria-label="Recolher menu lateral"
             title="Recolher menu lateral"
           >
@@ -126,7 +126,7 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
           <button
             type="button"
             onClick={alternarMenuRecolhido}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#ACBFA9] transition-colors hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2]"
+            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-[#ACBFA9] transition-colors hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2]"
             aria-label="Expandir menu lateral"
             title="Expandir menu lateral"
           >
@@ -159,17 +159,19 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
                     }}
                     aria-current={ativo ? 'page' : undefined}
                     title={modoRecolhido ? item.titulo : undefined}
-                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
+                    className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
                       modoRecolhido ? 'justify-center px-2' : ''
                     } ${
                       ativo
-                        ? 'bg-[#FAF6F2]/14 text-[#FAF6F2]'
-                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/8 hover:text-[#FAF6F2]'
+                        ? 'bg-[#FAF6F2]/16 text-[#FAF6F2]'
+                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]'
                     }`}
                   >
                     <Icone
-                      className={`h-[18px] w-[18px] shrink-0 ${
-                        ativo ? 'text-[#FAF6F2]' : 'text-[#ACBFA9]'
+                      className={`h-[18px] w-[18px] shrink-0 transition-colors duration-150 ${
+                        ativo
+                          ? 'text-[#FAF6F2]'
+                          : 'text-[#ACBFA9] group-hover:text-[#FAF6F2]'
                       }`}
                       strokeWidth={1.75}
                     />
@@ -205,17 +207,19 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
                     }}
                     aria-current={ativo ? 'page' : undefined}
                     title={modoRecolhido ? item.titulo : undefined}
-                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
+                    className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
                       modoRecolhido ? 'justify-center px-2' : ''
                     } ${
                       ativo
-                        ? 'bg-[#FAF6F2]/14 text-[#FAF6F2]'
-                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/8 hover:text-[#FAF6F2]'
+                        ? 'bg-[#FAF6F2]/16 text-[#FAF6F2]'
+                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]'
                     }`}
                   >
                     <Icone
-                      className={`h-[18px] w-[18px] shrink-0 ${
-                        ativo ? 'text-[#FAF6F2]' : 'text-[#ACBFA9]'
+                      className={`h-[18px] w-[18px] shrink-0 transition-colors duration-150 ${
+                        ativo
+                          ? 'text-[#FAF6F2]'
+                          : 'text-[#ACBFA9] group-hover:text-[#FAF6F2]'
                       }`}
                       strokeWidth={1.75}
                     />
@@ -262,12 +266,12 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
           type="button"
           onClick={onSair}
           title={modoRecolhido ? 'Sair' : undefined}
-          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#E6ECE2] transition-colors duration-150 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
+          className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#E6ECE2] transition-colors duration-150 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
             modoRecolhido ? 'justify-center px-2' : ''
           }`}
         >
           <LogOut
-            className="h-[18px] w-[18px] shrink-0 text-[#ACBFA9]"
+            className="h-[18px] w-[18px] shrink-0 text-[#ACBFA9] transition-colors duration-150 group-hover:text-[#FAF6F2]"
             strokeWidth={1.75}
           />
           {!modoRecolhido && <span className="whitespace-nowrap">Sair</span>}

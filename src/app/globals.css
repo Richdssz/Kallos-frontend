@@ -51,6 +51,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
 /* Classes Utilitárias Diretas em Português */
 .fonte-titulo {
   font-family: var(--font-display);
