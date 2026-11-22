@@ -13,12 +13,10 @@ export function middleware(request: NextRequest) {
     "/redefinir-senha",
   ];
 
-  // Usuário autenticado não precisa acessar páginas públicas.
   if (autenticado && rotasPublicas.includes(caminho)) {
     return NextResponse.redirect(new URL("/painel", request.url));
   }
 
-  // Usuário não autenticado não pode acessar páginas protegidas.
   if (!autenticado && !rotasPublicas.includes(caminho)) {
     const loginUrl = new URL("/login", request.url);
 
