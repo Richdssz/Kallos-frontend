@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
   CalendarDays,
   FileText,
@@ -11,12 +11,12 @@ import {
   Settings,
   Users,
   X,
-} from 'lucide-react';
-import { useAuthStore } from '@/store/painel/authStore';
-import { useConsultorioStore } from '@/store/painel/consultorioStore';
-import { useUIStore } from '@/store/painel/uiStore';
-import type { RotaNavegacao } from '@/types/painel/painel';
-import { KallosLogo } from './KallosLogo';
+} from "lucide-react";
+import { useAuthStore } from "@/store/painel/authStore";
+import { useConsultorioStore } from "@/store/painel/consultorioStore";
+import { useUIStore } from "@/store/painel/uiStore";
+import type { RotaNavegacao } from "@/types/painel/painel";
+import Image from "next/image";
 
 interface SidebarProps {
   rotaAtiva: RotaNavegacao;
@@ -31,22 +31,22 @@ interface ItemNavegacao {
 }
 
 const ITENS_CONSULTORIO: ItemNavegacao[] = [
-  { rota: '/painel', titulo: 'Painel geral', icone: LayoutDashboard },
-  { rota: '/pacientes', titulo: 'Pacientes', icone: Users },
-  { rota: '/agenda', titulo: 'Agenda e consultas', icone: CalendarDays },
-  { rota: '/prontuario', titulo: 'Prontuário e CID', icone: FileText },
+  { rota: "/painel", titulo: "Painel geral", icone: LayoutDashboard },
+  { rota: "/pacientes", titulo: "Pacientes", icone: Users },
+  { rota: "/agenda", titulo: "Agenda e consultas", icone: CalendarDays },
+  { rota: "/prontuario", titulo: "Prontuário e CID", icone: FileText },
 ];
 
 const ITENS_ADMINISTRACAO: ItemNavegacao[] = [
-  { rota: '/configuracoes', titulo: 'Configurações', icone: Settings },
+  { rota: "/configuracoes", titulo: "Configurações", icone: Settings },
 ];
 
 function obterIniciais(nome: string): string {
   const partes = nome
-    .replace(/^Dr\.?\s+|^Dra\.?\s+/i, '')
+    .replace(/^Dr\.?\s+|^Dra\.?\s+/i, "")
     .trim()
     .split(/\s+/);
-  if (partes.length === 0) return 'KP';
+  if (partes.length === 0) return "KP";
   if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
   return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
 }
@@ -64,29 +64,36 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
   useEffect(() => {
     if (!menuMobileAberto) return;
     const lidarTecla = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setMenuMobileAberto(false);
       }
     };
-    window.addEventListener('keydown', lidarTecla);
-    return () => window.removeEventListener('keydown', lidarTecla);
+    window.addEventListener("keydown", lidarTecla);
+    return () => window.removeEventListener("keydown", lidarTecla);
   }, [menuMobileAberto, setMenuMobileAberto]);
 
-  const iniciais = usuario ? obterIniciais(usuario.nome) : 'RP';
+  const iniciais = usuario ? obterIniciais(usuario.nome) : "RP";
   const subtituloUsuario =
-    perfil === 'administrador'
-      ? 'Perfil Administrador'
-      : `CRP ${usuario?.crp ?? ''}`;
+    perfil === "administrador"
+      ? "Perfil Administrador"
+      : `CRP ${usuario?.crp ?? ""}`;
 
   const renderizarConteudo = (modoRecolhido: boolean) => (
     <div className="flex h-full flex-col bg-[#334936] text-[#FAF6F2]">
       <div
         className={`flex items-center border-b border-[#FAF6F2]/12 px-4 py-5 ${
-          modoRecolhido ? 'justify-center' : 'justify-between'
+          modoRecolhido ? "justify-center" : "justify-between"
         }`}
       >
         <div className="flex items-center gap-3 overflow-hidden">
-          <KallosLogo className="h-8 w-8 shrink-0" variant="light" />
+          <Image
+            src="/kallos-k-mono-branco.svg"
+            alt="Logo Kallos"
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 object-contain"
+            priority
+          />
           {!modoRecolhido && (
             <div className="min-w-0">
               <p className="truncate text-base font-semibold tracking-tight text-[#FAF6F2]">
@@ -157,21 +164,21 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
                       onNavegar(item.rota, item.titulo);
                       setMenuMobileAberto(false);
                     }}
-                    aria-current={ativo ? 'page' : undefined}
+                    aria-current={ativo ? "page" : undefined}
                     title={modoRecolhido ? item.titulo : undefined}
                     className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
-                      modoRecolhido ? 'justify-center px-2' : ''
+                      modoRecolhido ? "justify-center px-2" : ""
                     } ${
                       ativo
-                        ? 'bg-[#FAF6F2]/16 text-[#FAF6F2]'
-                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]'
+                        ? "bg-[#FAF6F2]/16 text-[#FAF6F2]"
+                        : "text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]"
                     }`}
                   >
                     <Icone
                       className={`h-[18px] w-[18px] shrink-0 transition-colors duration-150 ${
                         ativo
-                          ? 'text-[#FAF6F2]'
-                          : 'text-[#ACBFA9] group-hover:text-[#FAF6F2]'
+                          ? "text-[#FAF6F2]"
+                          : "text-[#ACBFA9] group-hover:text-[#FAF6F2]"
                       }`}
                       strokeWidth={1.75}
                     />
@@ -205,21 +212,21 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
                       onNavegar(item.rota, item.titulo);
                       setMenuMobileAberto(false);
                     }}
-                    aria-current={ativo ? 'page' : undefined}
+                    aria-current={ativo ? "page" : undefined}
                     title={modoRecolhido ? item.titulo : undefined}
                     className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
-                      modoRecolhido ? 'justify-center px-2' : ''
+                      modoRecolhido ? "justify-center px-2" : ""
                     } ${
                       ativo
-                        ? 'bg-[#FAF6F2]/16 text-[#FAF6F2]'
-                        : 'text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]'
+                        ? "bg-[#FAF6F2]/16 text-[#FAF6F2]"
+                        : "text-[#E6ECE2]/85 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2]"
                     }`}
                   >
                     <Icone
                       className={`h-[18px] w-[18px] shrink-0 transition-colors duration-150 ${
                         ativo
-                          ? 'text-[#FAF6F2]'
-                          : 'text-[#ACBFA9] group-hover:text-[#FAF6F2]'
+                          ? "text-[#FAF6F2]"
+                          : "text-[#ACBFA9] group-hover:text-[#FAF6F2]"
                       }`}
                       strokeWidth={1.75}
                     />
@@ -240,7 +247,7 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
         {usuario && (
           <div
             className={`mb-2 flex items-center gap-3 rounded-lg bg-[#1D2C20]/45 p-2.5 ${
-              modoRecolhido ? 'justify-center' : ''
+              modoRecolhido ? "justify-center" : ""
             }`}
           >
             <div
@@ -265,9 +272,9 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
         <button
           type="button"
           onClick={onSair}
-          title={modoRecolhido ? 'Sair' : undefined}
+          title={modoRecolhido ? "Sair" : undefined}
           className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#E6ECE2] transition-colors duration-150 hover:bg-[#FAF6F2]/10 hover:text-[#FAF6F2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FAF6F2] ${
-            modoRecolhido ? 'justify-center px-2' : ''
+            modoRecolhido ? "justify-center px-2" : ""
           }`}
         >
           <LogOut
@@ -284,7 +291,7 @@ export function Sidebar({ rotaAtiva, onNavegar, onSair }: SidebarProps) {
     <>
       <aside
         className={`hidden shrink-0 transition-[width] duration-200 lg:block ${
-          menuRecolhido ? 'w-[76px]' : 'w-[260px]'
+          menuRecolhido ? "w-[76px]" : "w-[260px]"
         }`}
       >
         <div className="sticky top-0 h-screen">
