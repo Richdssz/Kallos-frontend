@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useState } from "react";
@@ -11,6 +12,7 @@ import {
   EnvelopeSimple,
 } from "@phosphor-icons/react";
 import { useAuthStore } from "@/store/auth/authStore";
+import { supabase } from "@/services/supabaseClient";
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -53,7 +55,7 @@ function LoginContent() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (carregando) return;
@@ -71,37 +73,47 @@ function LoginContent() {
       novosErros.email = "Digite um e-mail válido.";
     }
 
-    if (!senha.trim()) {
+    if (!senha) {
       novosErros.senha = "Informe sua senha.";
     }
 
     setErros(novosErros);
 
-    if (novosErros.email || novosErros.senha) {
-      return;
-    }
+    if (novosErros.email || novosErros.senha) return;
 
     setCarregando(true);
 
-    setTimeout(() => {
-      if (
-        email.trim() === "teste@kallospsi.com" &&
-        senha === "123456"
-      ) {
-        login(email.trim());
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: senha,
+      });
 
-        document.cookie =
-          "kallos-auth=true; Path=/; SameSite=Lax";
-
-        const destino = obterDestinoSeguro(rotaAnterior);
-
-        router.replace(destino);
-      } else {
+      if (error || !data.session) {
         setErro("Não foi possível realizar o login. Verifique suas credenciais.");
+        return;
       }
 
+      const token = data.session.access_token;
+      const tempoExpiracao = data.session.expires_in ?? 3600;
+      const secure =
+        window.location.protocol === "https:" ? "; Secure" : "";
+
+      document.cookie = `kallos-auth=true; Path=/; SameSite=Lax; Max-Age=${tempoExpiracao}${secure}`;
+
+      document.cookie = `kallos-token=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=${tempoExpiracao}${secure}`;
+
+      login(email.trim());
+
+      const destino = obterDestinoSeguro(rotaAnterior);
+
+      router.replace(destino);
+      router.refresh();
+    } catch {
+      setErro("Ocorreu um erro ao tentar entrar. Verifique sua conexão e tente novamente.");
+    } finally {
       setCarregando(false);
-    }, 1500);
+    }
   }
 
   return (
@@ -302,7 +314,13 @@ function LoginContent() {
 
 export function LoginForm() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Carregando...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          Carregando...
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

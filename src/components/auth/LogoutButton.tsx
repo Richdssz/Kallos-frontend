@@ -4,18 +4,29 @@
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/auth/authStore";
+import { supabase } from "@/services/supabaseClient";
 
 export default function LogoutButton() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
 
-  function handleLogout() {
-    logout();
-    queryClient.clear();
-    document.cookie =
-      "kallos-auth=; Path=/; Max-Age=0; SameSite=Lax";
-    router.replace("/login");
+  async function handleLogout() {
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } finally {
+      logout();
+      queryClient.clear();
+
+      document.cookie =
+        "kallos-auth=; Path=/; Max-Age=0; SameSite=Lax";
+
+      document.cookie =
+        "kallos-token=; Path=/; Max-Age=0; SameSite=Lax";
+
+      router.replace("/login");
+      router.refresh();
+    }
   }
 
   return (
